@@ -28,7 +28,7 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 **Phase 2 — Domain layer**
 - [x] [Task 8: Domain models — Coordinates, City, Forecast family](#task-8-domain-models--coordinates-city-forecast-family)
 - [x] [Task 9: WeatherCondition sealed interface + mapping tests](#task-9-weathercondition-sealed-interface--mapping-tests)
-- [ ] [Task 10: Repository interfaces](#task-10-repository-interfaces)
+- [x] [Task 10: Repository interfaces](#task-10-repository-interfaces)
 - [ ] [Task 11: GetForecastUseCase with tests](#task-11-getforecastusecase-with-tests)
 - [ ] [Task 12: Observer + simple mutation use cases](#task-12-observer--simple-mutation-use-cases)
 - [ ] [Task 13: SearchCitiesUseCase with trimming + min-length gate](#task-13-searchcitiesusecase-with-trimming--min-length-gate)
