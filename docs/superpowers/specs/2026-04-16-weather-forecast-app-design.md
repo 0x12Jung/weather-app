@@ -123,21 +123,32 @@ Each screen has a `ViewModel` exposing a single `StateFlow<SomeUiState>` where `
 
 **Dependency graph:**
 
-```
-              :app
-               │
-        :feature:weather
-         /    │    \
-   :core:ui   │   :core:domain   ←── pure JVM
-              │          ▲
-              └──────────┘
-                 :core:data  ←── implements :core:domain interfaces
+```mermaid
+graph TD
+    app([":app"])
+    feature([":feature:weather"])
+    ui([":core:ui"])
+    domain([":core:domain<br/><i>pure JVM</i>"])
+    data([":core:data"])
+
+    app --> feature
+    app -->|DI module<br/>aggregation| data
+    app --> ui
+    feature --> ui
+    feature --> domain
+    ui --> domain
+    data -.->|implements<br/>interfaces from| domain
+
+    classDef pure fill:#d4edda,stroke:#155724,color:#000
+    classDef impl fill:#fff3cd,stroke:#856404,color:#000
+    class domain pure
+    class data impl
 ```
 
-- `:app` depends on `:feature:weather`, `:core:data` (for DI binding), `:core:ui`, `:core:domain`.
-- `:feature:weather` depends on `:core:domain`, `:core:ui`. **NOT** on `:core:data` (so UI layer cannot import Retrofit etc.).
-- `:core:data` depends on `:core:domain`.
-- `:core:ui` is UI primitives only, no business logic.
+- `:app` depends on `:feature:weather`, `:core:data` (only for Hilt DI module aggregation; UI code never touches `:core:data` classes), `:core:ui`, and transitively `:core:domain`.
+- `:feature:weather` depends on `:core:domain` and `:core:ui`. **Not** on `:core:data` — so UI layer cannot accidentally import Retrofit / DataStore.
+- `:core:data` depends on `:core:domain` (implements its repository interfaces).
+- `:core:ui` depends on `:core:domain` for shared enums (e.g., `WeatherCondition` for `WeatherIcon`) and primitive models; otherwise UI-only, no business logic.
 
 ---
 
@@ -258,20 +269,55 @@ Response (relevant):
 
 ### 5.3 WMO weather_code → `WeatherCondition` mapping
 
-28 codes grouped into 8 visual buckets:
+28 documented codes grouped into 8 visual buckets, plus an explicit `Unknown` bucket for forward-compatibility (Open-Meteo may introduce new codes; silently mislabeling them as `Cloudy` would deceive the user):
 
-| Bucket | WMO codes | Drawable |
-|--------|-----------|----------|
-| Clear | 0, 1 | `ic_weather_clear` |
-| PartlyCloudy | 2 | `ic_weather_partly_cloudy` |
-| Cloudy | 3 | `ic_weather_cloudy` |
-| Fog | 45, 48 | `ic_weather_fog` |
-| Drizzle | 51, 53, 55, 56, 57 | `ic_weather_drizzle` |
-| Rain | 61, 63, 65, 66, 67, 80, 81, 82 | `ic_weather_rain` |
-| Snow | 71, 73, 75, 77, 85, 86 | `ic_weather_snow` |
-| Thunderstorm | 95, 96, 99 | `ic_weather_thunder` |
+| Bucket | WMO codes | Drawable | UI label |
+|--------|-----------|----------|----------|
+| Clear | 0, 1 | `ic_weather_clear` | "Clear" / "Mainly clear" |
+| PartlyCloudy | 2 | `ic_weather_partly_cloudy` | "Partly cloudy" |
+| Cloudy | 3 | `ic_weather_cloudy` | "Overcast" |
+| Fog | 45, 48 | `ic_weather_fog` | "Fog" |
+| Drizzle | 51, 53, 55, 56, 57 | `ic_weather_drizzle` | "Drizzle" |
+| Rain | 61, 63, 65, 66, 67, 80, 81, 82 | `ic_weather_rain` | "Rain" |
+| Snow | 71, 73, 75, 77, 85, 86 | `ic_weather_snow` | "Snow" |
+| Thunderstorm | 95, 96, 99 | `ic_weather_thunder` | "Thunderstorm" |
+| **Unknown** | any code not listed above | `ic_weather_unknown` | "Unknown conditions (code {wmoCode})" |
 
-Fallback for unknown/future codes: `Cloudy`.
+**Why an explicit `Unknown`:** weather apps must not silently misrepresent data. If the API returns an unrecognized code, the user deserves to see that fact — not a fake "Cloudy" icon. Displaying the raw code in the label also gives a debugging hook for triaging what new code Open-Meteo introduced.
+
+Because the raw WMO code is needed at display time for the `Unknown` label, `WeatherCondition` is modeled as a **sealed interface** (not a plain enum) so the `Unknown` variant can carry the code. The 8 known variants are `data object`:
+
+```kotlin
+sealed interface WeatherCondition {
+    data object Clear : WeatherCondition
+    data object PartlyCloudy : WeatherCondition
+    data object Cloudy : WeatherCondition
+    data object Fog : WeatherCondition
+    data object Drizzle : WeatherCondition
+    data object Rain : WeatherCondition
+    data object Snow : WeatherCondition
+    data object Thunderstorm : WeatherCondition
+    data class Unknown(val wmoCode: Int) : WeatherCondition
+
+    companion object {
+        fun fromWmoCode(code: Int): WeatherCondition = when (code) {
+            0, 1 -> Clear
+            2 -> PartlyCloudy
+            3 -> Cloudy
+            45, 48 -> Fog
+            51, 53, 55, 56, 57 -> Drizzle
+            61, 63, 65, 66, 67, 80, 81, 82 -> Rain
+            71, 73, 75, 77, 85, 86 -> Snow
+            95, 96, 99 -> Thunderstorm
+            else -> Unknown(code)
+        }
+    }
+}
+```
+
+The `:core:ui` `WeatherIcon` composable uses a `when` expression over the sealed hierarchy to pick drawable and label (exhaustiveness-checked by the compiler — if we ever add a new variant we are forced to update the UI mapping, no silent drift).
+
+A 9th drawable `ic_weather_unknown` (a question-mark-in-circle glyph, Meteocons `not-available.svg` or Material Symbols `help_outline` as fallback) must be bundled.
 
 ---
 
@@ -293,9 +339,17 @@ data class City(
     val timezone: String      // e.g., "Asia/Taipei"
 )
 
-// model/WeatherCondition.kt
-enum class WeatherCondition {
-    Clear, PartlyCloudy, Cloudy, Fog, Drizzle, Rain, Snow, Thunderstorm;
+// model/WeatherCondition.kt — full definition in Section 5.3
+sealed interface WeatherCondition {
+    data object Clear : WeatherCondition
+    data object PartlyCloudy : WeatherCondition
+    data object Cloudy : WeatherCondition
+    data object Fog : WeatherCondition
+    data object Drizzle : WeatherCondition
+    data object Rain : WeatherCondition
+    data object Snow : WeatherCondition
+    data object Thunderstorm : WeatherCondition
+    data class Unknown(val wmoCode: Int) : WeatherCondition
     companion object { fun fromWmoCode(code: Int): WeatherCondition = ... }
 }
 
