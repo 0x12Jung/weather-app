@@ -12,6 +12,67 @@
 
 ---
 
+## Progress Tracker
+
+Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes inside each task remain the source of truth for in-progress work.
+
+**Phase 1 — Foundation (Gradle + modules)**
+- [ ] [Task 1: Upgrade Kotlin + expand version catalog](#task-1-upgrade-kotlin--expand-version-catalog)
+- [ ] [Task 2: Register module paths in `settings.gradle.kts`](#task-2-register-module-paths-in-settingsgradlekts)
+- [ ] [Task 3: Create `:core:domain` skeleton](#task-3-create-coredomain-skeleton-pure-jvm-module)
+- [ ] [Task 4: Create `:core:data` skeleton](#task-4-create-coredata-skeleton-android-library-module)
+- [ ] [Task 5: Create `:core:ui` skeleton](#task-5-create-coreui-skeleton-compose-library-module)
+- [ ] [Task 6: Create `:feature:weather` skeleton](#task-6-create-featureweather-skeleton)
+- [ ] [Task 7: Migrate `:app` to new dependency graph and Hilt](#task-7-migrate-app-to-new-dependency-graph-and-hilt)
+
+**Phase 2 — Domain layer**
+- [ ] [Task 8: Domain models — Coordinates, City, Forecast family](#task-8-domain-models--coordinates-city-forecast-family)
+- [ ] [Task 9: WeatherCondition sealed interface + mapping tests](#task-9-weathercondition-sealed-interface--mapping-tests)
+- [ ] [Task 10: Repository interfaces](#task-10-repository-interfaces)
+- [ ] [Task 11: GetForecastUseCase with tests](#task-11-getforecastusecase-with-tests)
+- [ ] [Task 12: Observer + simple mutation use cases](#task-12-observer--simple-mutation-use-cases)
+- [ ] [Task 13: SearchCitiesUseCase with trimming + min-length gate](#task-13-searchcitiesusecase-with-trimming--min-length-gate)
+- [ ] [Task 14: SeedDefaultCityUseCase with idempotency](#task-14-seeddefaultcityusecase-with-idempotency)
+
+**Phase 3 — Data layer**
+- [ ] [Task 15: Open-Meteo DTOs](#task-15-open-meteo-dtos)
+- [ ] [Task 16: Retrofit services + MockWebServer tests](#task-16-retrofit-service-interfaces--mockwebserver-tests)
+- [ ] [Task 17: ForecastMapper with tests](#task-17-forecastmapper-with-tests)
+- [ ] [Task 18: CityMapper (DTO ↔ domain ↔ serializable)](#task-18-citymapper-dto--domain--serializable-with-tests)
+- [ ] [Task 19: SavedCitiesState + SavedCitiesSerializer](#task-19-savedcitiesstate--savedcitiesserializer-with-tests)
+- [ ] [Task 20: WeatherRepositoryImpl with tests](#task-20-weatherrepositoryimpl-with-tests)
+- [ ] [Task 21: CityRepositoryImpl with tests](#task-21-cityrepositoryimpl-with-tests-uses-a-fake-datastore)
+- [ ] [Task 22: Hilt DI modules for data layer](#task-22-hilt-di-modules-for-data-layer)
+
+**Phase 4 — `:core:ui`**
+- [ ] [Task 23: Material 3 theme](#task-23-coreui-theme-color--type--theme)
+- [ ] [Task 24: Shared components (Loading/Error/Empty)](#task-24-shared-components-loading--error--empty)
+- [ ] [Task 25: Weather icons + WeatherIcon component](#task-25-weather-icons-9-vector-drawables--weathericon-component)
+
+**Phase 5 — `:feature:weather` — ViewModels**
+- [ ] [Task 26: Navigation routes + weatherGraph](#task-26-navigation-routes--weathergraph)
+- [ ] [Task 27: WeatherViewModel + WeatherUiState](#task-27-weatherviewmodel--weatheruistate-with-tests)
+- [ ] [Task 28: CityListViewModel with swipe-to-dismiss + undo](#task-28-citylistviewmodel-with-swipe-to-dismiss--undo)
+- [ ] [Task 29: AddCityViewModel with debounce + mapLatest](#task-29-addcityviewmodel-with-debounce--maplatest)
+
+**Phase 6 — `:feature:weather` — Compose screens**
+- [ ] [Task 30: WeatherScreen composable](#task-30-weatherscreen-composable)
+- [ ] [Task 31: CityListScreen with swipe-to-dismiss + undo Snackbar](#task-31-citylistscreen-with-swipe-to-dismiss--undo-snackbar)
+- [ ] [Task 32: AddCityScreen composable](#task-32-addcityscreen-composable)
+
+**Phase 7 — `:app` wiring + verification**
+- [ ] [Task 33: MainActivity, AppNavHost, seed on startup](#task-33-app--mainactivity-appnavhost-seed-on-startup)
+- [ ] [Task 34: Delete scaffold leftovers](#task-34-delete-scaffold-leftovers-if-present)
+- [ ] [Task 35: Run the full test suite and manual smoke test](#task-35-run-the-full-test-suite-and-manual-smoke-test)
+
+**Phase 8 — Submission**
+- [ ] [Task 36: Write README.md](#task-36-write-readmemd)
+- [ ] [Task 37: Write AI_TOOLS.md](#task-37-write-ai_toolsmd)
+- [ ] [Task 38: Capture screenshots](#task-38-capture-screenshots-for-readme-optional-but-high-signal)
+- [ ] [Task 39: Final verification before submission](#task-39-final-verification-before-submission)
+
+---
+
 ## Execution Notes
 
 - **Commit cadence:** one commit per task (numbered). If a task's final step fails on a pre-commit hook, fix and create a NEW commit (do not amend).
