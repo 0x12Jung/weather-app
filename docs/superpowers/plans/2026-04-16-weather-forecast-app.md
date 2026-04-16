@@ -42,7 +42,7 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 19: SavedCitiesState + SavedCitiesSerializer](#task-19-savedcitiesstate--savedcitiesserializer-with-tests)
 - [x] [Task 20: WeatherRepositoryImpl with tests](#task-20-weatherrepositoryimpl-with-tests)
 - [x] [Task 21: CityRepositoryImpl with tests](#task-21-cityrepositoryimpl-with-tests-uses-a-fake-datastore)
-- [ ] [Task 22: Hilt DI modules for data layer](#task-22-hilt-di-modules-for-data-layer)
+- [x] [Task 22: Hilt DI modules for data layer](#task-22-hilt-di-modules-for-data-layer)
 
 **Phase 4 — `:core:ui`**
 - [ ] [Task 23: Material 3 theme](#task-23-coreui-theme-color--type--theme)
