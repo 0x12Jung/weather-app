@@ -1,0 +1,4 @@
+<resources>
+    <string name="core_ui_label_retry">Retry</string>
+    <string name="core_ui_label_loading">Loading…</string>
+</resources>
