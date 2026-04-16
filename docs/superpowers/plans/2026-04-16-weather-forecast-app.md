@@ -30,7 +30,7 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 9: WeatherCondition sealed interface + mapping tests](#task-9-weathercondition-sealed-interface--mapping-tests)
 - [x] [Task 10: Repository interfaces](#task-10-repository-interfaces)
 - [x] [Task 11: GetForecastUseCase with tests](#task-11-getforecastusecase-with-tests)
-- [ ] [Task 12: Observer + simple mutation use cases](#task-12-observer--simple-mutation-use-cases)
+- [x] [Task 12: Observer + simple mutation use cases](#task-12-observer--simple-mutation-use-cases)
 - [ ] [Task 13: SearchCitiesUseCase with trimming + min-length gate](#task-13-searchcitiesusecase-with-trimming--min-length-gate)
 - [ ] [Task 14: SeedDefaultCityUseCase with idempotency](#task-14-seeddefaultcityusecase-with-idempotency)
 
