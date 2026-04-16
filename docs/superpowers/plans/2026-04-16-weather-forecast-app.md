@@ -39,7 +39,7 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 16: Retrofit services + MockWebServer tests](#task-16-retrofit-service-interfaces--mockwebserver-tests)
 - [x] [Task 17: ForecastMapper with tests](#task-17-forecastmapper-with-tests)
 - [x] [Task 18: CityMapper (DTO ↔ domain ↔ serializable)](#task-18-citymapper-dto--domain--serializable-with-tests)
-- [ ] [Task 19: SavedCitiesState + SavedCitiesSerializer](#task-19-savedcitiesstate--savedcitiesserializer-with-tests)
+- [x] [Task 19: SavedCitiesState + SavedCitiesSerializer](#task-19-savedcitiesstate--savedcitiesserializer-with-tests)
 - [ ] [Task 20: WeatherRepositoryImpl with tests](#task-20-weatherrepositoryimpl-with-tests)
 - [ ] [Task 21: CityRepositoryImpl with tests](#task-21-cityrepositoryimpl-with-tests-uses-a-fake-datastore)
 - [ ] [Task 22: Hilt DI modules for data layer](#task-22-hilt-di-modules-for-data-layer)
