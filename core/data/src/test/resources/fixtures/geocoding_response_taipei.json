@@ -1,0 +1,22 @@
+{
+  "results": [
+    {
+      "id": 1668341,
+      "name": "Taipei",
+      "latitude": 25.04,
+      "longitude": 121.56,
+      "country": "Taiwan",
+      "admin1": "Taipei City",
+      "timezone": "Asia/Taipei"
+    },
+    {
+      "id": 1668342,
+      "name": "New Taipei",
+      "latitude": 25.01,
+      "longitude": 121.46,
+      "country": "Taiwan",
+      "admin1": "New Taipei",
+      "timezone": "Asia/Taipei"
+    }
+  ]
+}
