@@ -17,13 +17,13 @@
 Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes inside each task remain the source of truth for in-progress work.
 
 **Phase 1 — Foundation (Gradle + modules)**
-- [ ] [Task 1: Upgrade Kotlin + expand version catalog](#task-1-upgrade-kotlin--expand-version-catalog)
-- [ ] [Task 2: Register module paths in `settings.gradle.kts`](#task-2-register-module-paths-in-settingsgradlekts)
-- [ ] [Task 3: Create `:core:domain` skeleton](#task-3-create-coredomain-skeleton-pure-jvm-module)
-- [ ] [Task 4: Create `:core:data` skeleton](#task-4-create-coredata-skeleton-android-library-module)
-- [ ] [Task 5: Create `:core:ui` skeleton](#task-5-create-coreui-skeleton-compose-library-module)
-- [ ] [Task 6: Create `:feature:weather` skeleton](#task-6-create-featureweather-skeleton)
-- [ ] [Task 7: Migrate `:app` to new dependency graph and Hilt](#task-7-migrate-app-to-new-dependency-graph-and-hilt)
+- [x] [Task 1: Upgrade Kotlin + expand version catalog](#task-1-upgrade-kotlin--expand-version-catalog)
+- [x] [Task 2: Register module paths in `settings.gradle.kts`](#task-2-register-module-paths-in-settingsgradlekts)
+- [x] [Task 3: Create `:core:domain` skeleton](#task-3-create-coredomain-skeleton-pure-jvm-module)
+- [x] [Task 4: Create `:core:data` skeleton](#task-4-create-coredata-skeleton-android-library-module)
+- [x] [Task 5: Create `:core:ui` skeleton](#task-5-create-coreui-skeleton-compose-library-module)
+- [x] [Task 6: Create `:feature:weather` skeleton](#task-6-create-featureweather-skeleton)
+- [x] [Task 7: Migrate `:app` to new dependency graph and Hilt](#task-7-migrate-app-to-new-dependency-graph-and-hilt)
 
 **Phase 2 — Domain layer**
 - [ ] [Task 8: Domain models — Coordinates, City, Forecast family](#task-8-domain-models--coordinates-city-forecast-family)
