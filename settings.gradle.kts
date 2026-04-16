@@ -24,4 +24,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Take home test"
 include(":app")
- 
+include(":core:domain")
+include(":core:data")
+include(":core:ui")
+include(":feature:weather")
