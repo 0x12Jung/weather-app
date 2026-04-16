@@ -26,8 +26,8 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 7: Migrate `:app` to new dependency graph and Hilt](#task-7-migrate-app-to-new-dependency-graph-and-hilt)
 
 **Phase 2 — Domain layer**
-- [ ] [Task 8: Domain models — Coordinates, City, Forecast family](#task-8-domain-models--coordinates-city-forecast-family)
-- [ ] [Task 9: WeatherCondition sealed interface + mapping tests](#task-9-weathercondition-sealed-interface--mapping-tests)
+- [x] [Task 8: Domain models — Coordinates, City, Forecast family](#task-8-domain-models--coordinates-city-forecast-family)
+- [x] [Task 9: WeatherCondition sealed interface + mapping tests](#task-9-weathercondition-sealed-interface--mapping-tests)
 - [ ] [Task 10: Repository interfaces](#task-10-repository-interfaces)
 - [ ] [Task 11: GetForecastUseCase with tests](#task-11-getforecastusecase-with-tests)
 - [ ] [Task 12: Observer + simple mutation use cases](#task-12-observer--simple-mutation-use-cases)
