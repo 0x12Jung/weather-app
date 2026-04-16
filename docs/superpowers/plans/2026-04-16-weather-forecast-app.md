@@ -35,7 +35,7 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 14: SeedDefaultCityUseCase with idempotency](#task-14-seeddefaultcityusecase-with-idempotency)
 
 **Phase 3 — Data layer**
-- [ ] [Task 15: Open-Meteo DTOs](#task-15-open-meteo-dtos)
+- [x] [Task 15: Open-Meteo DTOs](#task-15-open-meteo-dtos)
 - [ ] [Task 16: Retrofit services + MockWebServer tests](#task-16-retrofit-service-interfaces--mockwebserver-tests)
 - [ ] [Task 17: ForecastMapper with tests](#task-17-forecastmapper-with-tests)
 - [ ] [Task 18: CityMapper (DTO ↔ domain ↔ serializable)](#task-18-citymapper-dto--domain--serializable-with-tests)
