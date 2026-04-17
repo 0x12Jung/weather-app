@@ -1,12 +1,27 @@
 package com.opnt.takehometest.feature.weather.navigation
 
-import androidx.compose.material3.Text
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.opnt.takehometest.feature.weather.addcity.AddCityScreen
+import com.opnt.takehometest.feature.weather.cities.CityListScreen
+import com.opnt.takehometest.feature.weather.weather.WeatherScreen
 
 fun NavGraphBuilder.weatherGraph(navController: NavController) {
-    composable<WeatherRoute> { Text("Weather screen stub") }
-    composable<CityListRoute> { Text("City list screen stub") }
-    composable<AddCityRoute> { Text("Add city screen stub") }
+    composable<WeatherRoute> {
+        WeatherScreen(onOpenCityList = { navController.navigate(CityListRoute) })
+    }
+    composable<CityListRoute> {
+        CityListScreen(
+            onAddCity = { navController.navigate(AddCityRoute) },
+            onBack = { navController.popBackStack() },
+            onCitySelected = { navController.popBackStack() },
+        )
+    }
+    composable<AddCityRoute> {
+        AddCityScreen(
+            onCityAdded = { navController.popBackStack() },
+            onBack = { navController.popBackStack() },
+        )
+    }
 }
