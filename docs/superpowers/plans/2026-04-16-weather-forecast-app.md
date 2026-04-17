@@ -61,8 +61,8 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 32: AddCityScreen composable](#task-32-addcityscreen-composable)
 
 **Phase 7 — `:app` wiring + verification**
-- [ ] [Task 33: MainActivity, AppNavHost, seed on startup](#task-33-app--mainactivity-appnavhost-seed-on-startup)
-- [ ] [Task 34: Delete scaffold leftovers](#task-34-delete-scaffold-leftovers-if-present)
+- [x] [Task 33: MainActivity, AppNavHost, seed on startup](#task-33-app--mainactivity-appnavhost-seed-on-startup)
+- [x] [Task 34: Delete scaffold leftovers](#task-34-delete-scaffold-leftovers-if-present)
 - [ ] [Task 35: Run the full test suite and manual smoke test](#task-35-run-the-full-test-suite-and-manual-smoke-test)
 
 **Phase 8 — Submission**
