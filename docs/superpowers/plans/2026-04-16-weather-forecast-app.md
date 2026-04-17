@@ -56,9 +56,9 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 29: AddCityViewModel with debounce + mapLatest](#task-29-addcityviewmodel-with-debounce--maplatest)
 
 **Phase 6 — `:feature:weather` — Compose screens**
-- [ ] [Task 30: WeatherScreen composable](#task-30-weatherscreen-composable)
-- [ ] [Task 31: CityListScreen with swipe-to-dismiss + undo Snackbar](#task-31-citylistscreen-with-swipe-to-dismiss--undo-snackbar)
-- [ ] [Task 32: AddCityScreen composable](#task-32-addcityscreen-composable)
+- [x] [Task 30: WeatherScreen composable](#task-30-weatherscreen-composable)
+- [x] [Task 31: CityListScreen with swipe-to-dismiss + undo Snackbar](#task-31-citylistscreen-with-swipe-to-dismiss--undo-snackbar)
+- [x] [Task 32: AddCityScreen composable](#task-32-addcityscreen-composable)
 
 **Phase 7 — `:app` wiring + verification**
 - [ ] [Task 33: MainActivity, AppNavHost, seed on startup](#task-33-app--mainactivity-appnavhost-seed-on-startup)
