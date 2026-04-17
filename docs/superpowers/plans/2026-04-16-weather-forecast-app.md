@@ -66,8 +66,8 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 35: Run the full test suite and manual smoke test](#task-35-run-the-full-test-suite-and-manual-smoke-test)
 
 **Phase 8 — Submission**
-- [ ] [Task 36: Write README.md](#task-36-write-readmemd)
-- [ ] [Task 37: Write AI_TOOLS.md](#task-37-write-ai_toolsmd)
+- [x] [Task 36: Write README.md](#task-36-write-readmemd)
+- [x] [Task 37: Write AI_TOOLS.md](#task-37-write-ai_toolsmd)
 - [ ] [Task 38: Capture screenshots](#task-38-capture-screenshots-for-readme-optional-but-high-signal)
 - [ ] [Task 39: Final verification before submission](#task-39-final-verification-before-submission)
 
