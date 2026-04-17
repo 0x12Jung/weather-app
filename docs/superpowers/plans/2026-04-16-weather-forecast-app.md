@@ -53,7 +53,7 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 - [x] [Task 26: Navigation routes + weatherGraph](#task-26-navigation-routes--weathergraph)
 - [x] [Task 27: WeatherViewModel + WeatherUiState](#task-27-weatherviewmodel--weatheruistate-with-tests)
 - [x] [Task 28: CityListViewModel with swipe-to-dismiss + undo](#task-28-citylistviewmodel-with-swipe-to-dismiss--undo)
-- [ ] [Task 29: AddCityViewModel with debounce + mapLatest](#task-29-addcityviewmodel-with-debounce--maplatest)
+- [x] [Task 29: AddCityViewModel with debounce + mapLatest](#task-29-addcityviewmodel-with-debounce--maplatest)
 
 **Phase 6 — `:feature:weather` — Compose screens**
 - [ ] [Task 30: WeatherScreen composable](#task-30-weatherscreen-composable)
