@@ -47,7 +47,7 @@ Tick each task as its final commit lands. Coarse-grained — sub-step checkboxes
 **Phase 4 — `:core:ui`**
 - [x] [Task 23: Material 3 theme](#task-23-coreui-theme-color--type--theme)
 - [x] [Task 24: Shared components (Loading/Error/Empty)](#task-24-shared-components-loading--error--empty)
-- [ ] [Task 25: Weather icons + WeatherIcon component](#task-25-weather-icons-9-vector-drawables--weathericon-component)
+- [x] [Task 25: Weather icons + WeatherIcon component](#task-25-weather-icons-9-vector-drawables--weathericon-component)
 
 **Phase 5 — `:feature:weather` — ViewModels**
 - [ ] [Task 26: Navigation routes + weatherGraph](#task-26-navigation-routes--weathergraph)
