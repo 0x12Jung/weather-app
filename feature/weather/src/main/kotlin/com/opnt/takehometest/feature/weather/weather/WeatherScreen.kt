@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,9 +54,11 @@ fun WeatherScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    val title = (uiState as? WeatherUiState.Success)?.city?.let { "${it.name}, ${it.country}" }
-                        ?: "Weather"
-                    Text(title)
+                    val cityTitle = when (val state = uiState) {
+                        is WeatherUiState.Success -> "${state.city.name}, ${state.city.country}"
+                        else -> "Weather"
+                    }
+                    Text(cityTitle)
                 },
                 actions = {
                     IconButton(onClick = onOpenCityList) {
@@ -151,8 +154,13 @@ private fun DailyRow(daily: DailyWeather) {
         )
         WeatherIcon(daily.condition, modifier = Modifier.size(32.dp))
         Text(
+            text = daily.condition.label(),
+            modifier = Modifier.weight(1f).padding(start = 16.dp),
+            textAlign = TextAlign.Center,
+        )
+        Text(
             text = "${daily.minTemperatureCelsius.toInt()}° / ${daily.maxTemperatureCelsius.toInt()}°",
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier.weight(1f).padding(start = 16.dp),
         )
     }
 }
