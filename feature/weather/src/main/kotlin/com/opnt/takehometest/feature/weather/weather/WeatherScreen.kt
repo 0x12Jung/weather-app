@@ -54,9 +54,11 @@ fun WeatherScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    val title = (uiState as? WeatherUiState.Success)?.city?.let { "${it.name}, ${it.country}" }
-                        ?: "Weather"
-                    Text(title)
+                    val cityTitle = when (val state = uiState) {
+                        is WeatherUiState.Success -> "${state.city.name}, ${state.city.country}"
+                        else -> "Weather"
+                    }
+                    Text(cityTitle)
                 },
                 actions = {
                     IconButton(onClick = onOpenCityList) {
