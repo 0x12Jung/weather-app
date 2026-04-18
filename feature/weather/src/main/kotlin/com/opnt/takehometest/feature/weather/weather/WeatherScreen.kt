@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -151,8 +152,13 @@ private fun DailyRow(daily: DailyWeather) {
         )
         WeatherIcon(daily.condition, modifier = Modifier.size(32.dp))
         Text(
+            text = daily.condition.label(),
+            modifier = Modifier.weight(1f).padding(start = 16.dp),
+            textAlign = TextAlign.Center,
+        )
+        Text(
             text = "${daily.minTemperatureCelsius.toInt()}° / ${daily.maxTemperatureCelsius.toInt()}°",
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier.weight(1f).padding(start = 16.dp),
         )
     }
 }
