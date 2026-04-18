@@ -1,25 +1,34 @@
 package com.opnt.takehometest.core.ui.component
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.BlurOn
+import androidx.compose.material.icons.filled.Grain
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Thunderstorm
+import androidx.compose.material.icons.filled.Umbrella
+import androidx.compose.material.icons.filled.WbCloudy
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.opnt.takehometest.core.domain.model.WeatherCondition
-import com.opnt.takehometest.core.ui.R
 
 @Composable
 fun WeatherIcon(
     condition: WeatherCondition,
     modifier: Modifier = Modifier,
-    colorFilter: ColorFilter? = null,
+    tint: Color = LocalContentColor.current,
 ) {
-    Image(
-        painter = painterResource(id = condition.drawableRes()),
+    Icon(
+        imageVector = condition.imageVector(),
         contentDescription = condition.label(),
         modifier = modifier,
-        colorFilter = colorFilter,
+        tint = tint,
     )
 }
 
@@ -35,15 +44,14 @@ fun WeatherCondition.label(): String = when (this) {
     is WeatherCondition.Unknown -> "Unknown conditions (code $wmoCode)"
 }
 
-@DrawableRes
-private fun WeatherCondition.drawableRes(): Int = when (this) {
-    WeatherCondition.Clear -> R.drawable.ic_weather_clear
-    WeatherCondition.PartlyCloudy -> R.drawable.ic_weather_partly_cloudy
-    WeatherCondition.Cloudy -> R.drawable.ic_weather_cloudy
-    WeatherCondition.Fog -> R.drawable.ic_weather_fog
-    WeatherCondition.Drizzle -> R.drawable.ic_weather_drizzle
-    WeatherCondition.Rain -> R.drawable.ic_weather_rain
-    WeatherCondition.Snow -> R.drawable.ic_weather_snow
-    WeatherCondition.Thunderstorm -> R.drawable.ic_weather_thunder
-    is WeatherCondition.Unknown -> R.drawable.ic_weather_unknown
+private fun WeatherCondition.imageVector(): ImageVector = when (this) {
+    WeatherCondition.Clear -> Icons.Filled.WbSunny
+    WeatherCondition.PartlyCloudy -> Icons.Filled.WbCloudy
+    WeatherCondition.Cloudy -> Icons.Filled.Cloud
+    WeatherCondition.Fog -> Icons.Filled.BlurOn
+    WeatherCondition.Drizzle -> Icons.Filled.Grain
+    WeatherCondition.Rain -> Icons.Filled.Umbrella
+    WeatherCondition.Snow -> Icons.Filled.AcUnit
+    WeatherCondition.Thunderstorm -> Icons.Filled.Thunderstorm
+    is WeatherCondition.Unknown -> Icons.AutoMirrored.Filled.HelpOutline
 }
