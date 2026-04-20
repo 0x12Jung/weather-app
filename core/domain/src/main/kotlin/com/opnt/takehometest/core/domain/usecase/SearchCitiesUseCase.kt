@@ -9,11 +9,7 @@ class SearchCitiesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(query: String): List<City> {
         val trimmed = query.trim()
-        if (trimmed.length < MIN_QUERY_LENGTH) return emptyList()
+        if (trimmed.isEmpty()) return emptyList()
         return repository.searchCities(trimmed)
-    }
-
-    companion object {
-        const val MIN_QUERY_LENGTH = 2
     }
 }

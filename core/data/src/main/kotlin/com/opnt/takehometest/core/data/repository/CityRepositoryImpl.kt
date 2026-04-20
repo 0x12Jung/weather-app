@@ -6,9 +6,11 @@ import com.opnt.takehometest.core.data.mapper.CityMapper
 import com.opnt.takehometest.core.data.network.OpenMeteoGeocodingApi
 import com.opnt.takehometest.core.domain.model.City
 import com.opnt.takehometest.core.domain.repository.CityRepository
+import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import retrofit2.HttpException
 
 internal class CityRepositoryImpl @Inject constructor(
     private val geocodingApi: OpenMeteoGeocodingApi,
@@ -24,9 +26,12 @@ internal class CityRepositoryImpl @Inject constructor(
             state.cities.firstOrNull { it.id == state.selectedCityId }?.let(mapper::toDomain)
         }
 
-    override suspend fun searchCities(query: String): List<City> =
+    override suspend fun searchCities(query: String): List<City> = try {
         geocodingApi.search(name = query.trim())
             .results.map(mapper::toDomain)
+    } catch (e: HttpException) {
+        throw IOException("HTTP ${e.code()}", e)
+    }
 
     override suspend fun addCity(city: City) {
         dataStore.updateData { state ->
