@@ -79,7 +79,7 @@ class AddCityViewModel @Inject constructor(
         if (cities.isEmpty()) AddCityUiState.NoResults
         else AddCityUiState.Results(cities.map { AddCityResultItem(it, alreadySaved = false) })
     } catch (_: IOException) {
-        AddCityUiState.Error("Search failed. Check your network.")
+        AddCityUiState.Error(AddCityError.SearchFailed)
     }
 
     private fun AddCityUiState.markSaved(saved: List<City>): AddCityUiState {

@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import com.opnt.takehometest.core.ui.component.ErrorView
 import com.opnt.takehometest.core.ui.component.LoadingIndicator
 import com.opnt.takehometest.core.ui.component.WeatherIcon
 import com.opnt.takehometest.core.ui.component.label
+import com.opnt.takehometest.feature.weather.R
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -56,13 +58,16 @@ fun WeatherScreen(
                 title = {
                     val cityTitle = when (val state = uiState) {
                         is WeatherUiState.Success -> "${state.city.name}, ${state.city.country}"
-                        else -> "Weather"
+                        else -> stringResource(R.string.weather_title)
                     }
                     Text(cityTitle)
                 },
                 actions = {
                     IconButton(onClick = onOpenCityList) {
-                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Cities")
+                        Icon(
+                            Icons.AutoMirrored.Filled.List,
+                            contentDescription = stringResource(R.string.weather_cd_cities),
+                        )
                     }
                 },
             )
@@ -72,11 +77,17 @@ fun WeatherScreen(
             when (val state = uiState) {
                 WeatherUiState.Loading -> LoadingIndicator()
                 WeatherUiState.NoCity -> EmptyView(
-                    message = "No city selected\nAdd a city to see forecasts",
-                    actionLabel = "Add city",
+                    message = stringResource(R.string.weather_empty_no_city),
+                    actionLabel = stringResource(R.string.weather_action_add_city),
                     onAction = onOpenCityList,
                 )
-                is WeatherUiState.Error -> ErrorView(state.message, onRetry = viewModel::onRetry)
+                is WeatherUiState.Error -> {
+                    val msg = when (state.error) {
+                        WeatherError.NoInternet -> stringResource(R.string.weather_error_no_internet)
+                        WeatherError.Generic -> stringResource(R.string.weather_error_generic)
+                    }
+                    ErrorView(msg, onRetry = viewModel::onRetry)
+                }
                 is WeatherUiState.Success -> WeatherContent(state.forecast)
             }
         }
@@ -90,14 +101,24 @@ private fun WeatherContent(forecast: Forecast) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { CurrentCard(forecast) }
-        item { Text("Next 24 hours", style = MaterialTheme.typography.titleMedium) }
+        item {
+            Text(
+                stringResource(R.string.weather_section_next_24h),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(forecast.hourly, key = { it.time.toEpochMilliseconds() }) { HourlyCell(it) }
             }
         }
         item { HorizontalDivider() }
-        item { Text("Next 7 days", style = MaterialTheme.typography.titleMedium) }
+        item {
+            Text(
+                stringResource(R.string.weather_section_next_7d),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
         items(forecast.daily, key = { it.date.toEpochDays() }) { DailyRow(it) }
     }
 }
@@ -119,7 +140,7 @@ private fun CurrentCard(forecast: Forecast) {
                 }
             }
             Text(
-                text = "Wind: ${current.windSpeedKmh} km/h",
+                text = stringResource(R.string.weather_current_wind_kmh, current.windSpeedKmh),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 8.dp),
             )

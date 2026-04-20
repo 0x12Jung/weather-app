@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import com.opnt.takehometest.core.domain.model.WeatherCondition
+import com.opnt.takehometest.core.ui.R
 
 @Composable
 fun WeatherIcon(
@@ -32,16 +34,17 @@ fun WeatherIcon(
     )
 }
 
+@Composable
 fun WeatherCondition.label(): String = when (this) {
-    WeatherCondition.Clear -> "Clear"
-    WeatherCondition.PartlyCloudy -> "Partly cloudy"
-    WeatherCondition.Cloudy -> "Overcast"
-    WeatherCondition.Fog -> "Fog"
-    WeatherCondition.Drizzle -> "Drizzle"
-    WeatherCondition.Rain -> "Rain"
-    WeatherCondition.Snow -> "Snow"
-    WeatherCondition.Thunderstorm -> "Thunderstorm"
-    is WeatherCondition.Unknown -> "Unknown conditions (code $wmoCode)"
+    WeatherCondition.Clear -> stringResource(R.string.core_ui_weather_condition_clear)
+    WeatherCondition.PartlyCloudy -> stringResource(R.string.core_ui_weather_condition_partly_cloudy)
+    WeatherCondition.Cloudy -> stringResource(R.string.core_ui_weather_condition_cloudy)
+    WeatherCondition.Fog -> stringResource(R.string.core_ui_weather_condition_fog)
+    WeatherCondition.Drizzle -> stringResource(R.string.core_ui_weather_condition_drizzle)
+    WeatherCondition.Rain -> stringResource(R.string.core_ui_weather_condition_rain)
+    WeatherCondition.Snow -> stringResource(R.string.core_ui_weather_condition_snow)
+    WeatherCondition.Thunderstorm -> stringResource(R.string.core_ui_weather_condition_thunderstorm)
+    is WeatherCondition.Unknown -> stringResource(R.string.core_ui_weather_condition_unknown, wmoCode)
 }
 
 private fun WeatherCondition.imageVector(): ImageVector = when (this) {

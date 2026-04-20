@@ -32,11 +32,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.opnt.takehometest.core.ui.component.EmptyView
 import com.opnt.takehometest.core.ui.component.ErrorView
+import com.opnt.takehometest.feature.weather.R
+import com.opnt.takehometest.core.ui.R as CoreUiR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,10 +63,13 @@ fun AddCityScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add city") },
+                title = { Text(stringResource(R.string.add_city_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(CoreUiR.string.core_ui_cd_back),
+                        )
                     }
                 },
             )
@@ -77,7 +83,7 @@ fun AddCityScreen(
                         queryInput = it
                         viewModel.onQueryChange(it)
                     },
-                    label = { Text("Search city") },
+                    label = { Text(stringResource(R.string.add_city_search_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                         .padding(16.dp)
@@ -86,16 +92,22 @@ fun AddCityScreen(
 
                 when (val state = uiState) {
                     is AddCityUiState.Idle -> EmptyView(
-                        message = "Start typing a city name",
+                        message = stringResource(R.string.add_city_empty_idle),
                     )
                     is AddCityUiState.Loading -> Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) { CircularProgressIndicator() }
                     is AddCityUiState.NoResults -> EmptyView(
-                        message = "No cities match your search",
+                        message = stringResource(R.string.add_city_empty_no_results),
                     )
-                    is AddCityUiState.Error -> ErrorView(state.message)
+                    is AddCityUiState.Error -> {
+                        val msg = when (state.error) {
+                            AddCityError.SearchFailed ->
+                                stringResource(R.string.add_city_error_search_failed)
+                        }
+                        ErrorView(msg)
+                    }
                     is AddCityUiState.Results -> LazyColumn(Modifier.fillMaxSize()) {
                         items(state.cities, key = { it.city.id }) { item ->
                             ListItem(
@@ -108,7 +120,7 @@ fun AddCityScreen(
                                 trailingContent = if (item.alreadySaved) {
                                     @Composable {
                                         Text(
-                                            "Already saved",
+                                            stringResource(R.string.add_city_trailing_already_saved),
                                             color = MaterialTheme.colorScheme.outline,
                                         )
                                     }

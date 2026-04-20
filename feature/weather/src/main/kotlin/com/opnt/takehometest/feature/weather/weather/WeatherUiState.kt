@@ -11,5 +11,7 @@ sealed interface WeatherUiState {
         val forecast: Forecast,
         val isRefreshing: Boolean = false,
     ) : WeatherUiState
-    data class Error(val message: String) : WeatherUiState
+    data class Error(val error: WeatherError) : WeatherUiState
 }
+
+enum class WeatherError { NoInternet, Generic }

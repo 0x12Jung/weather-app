@@ -14,8 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.dp
+import com.opnt.takehometest.core.ui.R
 
 @Composable
 fun ErrorView(
@@ -42,7 +44,7 @@ fun ErrorView(
         )
         if (onRetry != null) {
             Button(onClick = onRetry, modifier = Modifier.padding(top = 12.dp)) {
-                Text("Retry")
+                Text(stringResource(R.string.core_ui_label_retry))
             }
         }
     }

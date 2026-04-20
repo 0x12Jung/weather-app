@@ -22,7 +22,7 @@ class CityListScreenSourceTest {
 
         assertFalse(source.contains("FloatingActionButton"))
         assertTrue(source.contains("TextButton("))
-        assertTrue(source.contains("Text(\"Add city\")"))
+        assertTrue(source.contains("R.string.weather_action_add_city"))
     }
 
     @Test

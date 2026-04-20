@@ -95,6 +95,20 @@ class AddCityViewModelTest {
     }
 
     @Test
+    fun `emits Error when search throws IOException`() = runTest {
+        coEvery { search("Tai") } throws java.io.IOException()
+        val vm = newVm()
+        vm.uiState.test {
+            skipItems(1)
+            vm.onQueryChange("Tai")
+            advanceUntilIdle()
+            val latest = expectMostRecentItem() as AddCityUiState.Error
+            assertThat(latest.error).isEqualTo(AddCityError.SearchFailed)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `marks already-saved cities via alreadySaved flag`() = runTest {
         coEvery { search("Taipei") } returns listOf(taipei)
         every { observeSaved() } returns flowOf(listOf(taipei))

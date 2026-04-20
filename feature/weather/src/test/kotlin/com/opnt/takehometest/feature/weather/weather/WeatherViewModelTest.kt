@@ -77,8 +77,8 @@ class WeatherViewModelTest {
         val vm = WeatherViewModel(observeSelectedCity, getForecast)
         vm.uiState.test {
             assertThat(awaitItem()).isEqualTo(WeatherUiState.Loading)
-            val err = awaitItem()
-            assertThat(err).isInstanceOf(WeatherUiState.Error::class.java)
+            val err = awaitItem() as WeatherUiState.Error
+            assertThat(err.error).isEqualTo(WeatherError.NoInternet)
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -29,12 +29,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.opnt.takehometest.core.ui.component.EmptyView
 import com.opnt.takehometest.core.ui.component.LoadingIndicator
+import com.opnt.takehometest.feature.weather.R
+import com.opnt.takehometest.core.ui.R as CoreUiR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,15 +52,18 @@ fun CityListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Cities") },
+                title = { Text(stringResource(R.string.cities_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(CoreUiR.string.core_ui_cd_back),
+                        )
                     }
                 },
                 actions = {
                     TextButton(onClick = onAddCity) {
-                        Text("Add city")
+                        Text(stringResource(R.string.weather_action_add_city))
                     }
                 },
             )
@@ -69,8 +75,8 @@ fun CityListScreen(
                 is CityListUiState.Content -> {
                     if (state.cities.isEmpty()) {
                         EmptyView(
-                            message = "No saved cities",
-                            actionLabel = "Add city",
+                            message = stringResource(R.string.cities_empty_no_saved),
+                            actionLabel = stringResource(R.string.weather_action_add_city),
                             onAction = onAddCity,
                         )
                     } else {
@@ -122,7 +128,7 @@ private fun SwipeableCityRow(
             ) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(R.string.cities_cd_delete),
                     tint = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.size(24.dp),
                 )

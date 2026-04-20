@@ -7,8 +7,10 @@ sealed interface AddCityUiState {
     data object Loading : AddCityUiState
     data class Results(val cities: List<AddCityResultItem>) : AddCityUiState
     data object NoResults : AddCityUiState
-    data class Error(val message: String) : AddCityUiState
+    data class Error(val error: AddCityError) : AddCityUiState
 }
+
+enum class AddCityError { SearchFailed }
 
 data class AddCityResultItem(val city: City, val alreadySaved: Boolean)
 

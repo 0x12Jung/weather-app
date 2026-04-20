@@ -1,0 +1,25 @@
+<resources>
+    <!-- Weather screen -->
+    <string name="weather_title">Weather</string>
+    <string name="weather_cd_cities">Cities</string>
+    <string name="weather_empty_no_city">No city selected\nAdd a city to see forecasts</string>
+    <string name="weather_action_add_city">Add city</string>
+    <string name="weather_section_next_24h">Next 24 hours</string>
+    <string name="weather_section_next_7d">Next 7 days</string>
+    <string name="weather_current_wind_kmh">Wind: %1$s km/h</string>
+    <string name="weather_error_no_internet">No internet connection.\nCheck your network and try again.</string>
+    <string name="weather_error_generic">Something went wrong.</string>
+
+    <!-- City list screen -->
+    <string name="cities_title">Cities</string>
+    <string name="cities_empty_no_saved">No saved cities</string>
+    <string name="cities_cd_delete">Delete</string>
+
+    <!-- Add city screen -->
+    <string name="add_city_title">Add city</string>
+    <string name="add_city_search_label">Search city</string>
+    <string name="add_city_empty_idle">Start typing a city name</string>
+    <string name="add_city_empty_no_results">No cities match your search</string>
+    <string name="add_city_trailing_already_saved">Already saved</string>
+    <string name="add_city_error_search_failed">Search failed. Check your network.</string>
+</resources>

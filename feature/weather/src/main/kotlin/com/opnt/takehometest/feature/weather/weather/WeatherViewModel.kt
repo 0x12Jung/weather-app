@@ -53,7 +53,7 @@ class WeatherViewModel @Inject constructor(
                 val forecast = getForecast(city)
                 _uiState.value = WeatherUiState.Success(city, forecast)
             } catch (t: Throwable) {
-                _uiState.value = WeatherUiState.Error(t.toUserMessage())
+                _uiState.value = WeatherUiState.Error(t.toError())
             }
         }
     }
@@ -64,12 +64,12 @@ class WeatherViewModel @Inject constructor(
             val forecast = getForecast(city)
             _uiState.value = WeatherUiState.Success(city, forecast)
         } catch (t: Throwable) {
-            _uiState.value = WeatherUiState.Error(t.toUserMessage())
+            _uiState.value = WeatherUiState.Error(t.toError())
         }
     }
 }
 
-internal fun Throwable.toUserMessage(): String = when (this) {
-    is IOException -> "No internet connection.\nCheck your network and try again."
-    else -> "Something went wrong."
+internal fun Throwable.toError(): WeatherError = when (this) {
+    is IOException -> WeatherError.NoInternet
+    else -> WeatherError.Generic
 }

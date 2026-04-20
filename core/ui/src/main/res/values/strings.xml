@@ -1,4 +1,14 @@
 <resources>
     <string name="core_ui_label_retry">Retry</string>
     <string name="core_ui_label_loading">Loading…</string>
+    <string name="core_ui_cd_back">Back</string>
+    <string name="core_ui_weather_condition_clear">Clear</string>
+    <string name="core_ui_weather_condition_partly_cloudy">Partly cloudy</string>
+    <string name="core_ui_weather_condition_cloudy">Overcast</string>
+    <string name="core_ui_weather_condition_fog">Fog</string>
+    <string name="core_ui_weather_condition_drizzle">Drizzle</string>
+    <string name="core_ui_weather_condition_rain">Rain</string>
+    <string name="core_ui_weather_condition_snow">Snow</string>
+    <string name="core_ui_weather_condition_thunderstorm">Thunderstorm</string>
+    <string name="core_ui_weather_condition_unknown">Unknown conditions (code %1$d)</string>
 </resources>
