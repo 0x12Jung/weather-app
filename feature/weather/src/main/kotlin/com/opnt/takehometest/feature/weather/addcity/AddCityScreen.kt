@@ -86,7 +86,7 @@ fun AddCityScreen(
 
                 when (val state = uiState) {
                     is AddCityUiState.Idle -> EmptyView(
-                        message = "Start typing a city name (at least 2 characters).",
+                        message = "Start typing a city name.",
                     )
                     is AddCityUiState.Loading -> Box(
                         modifier = Modifier.fillMaxSize(),

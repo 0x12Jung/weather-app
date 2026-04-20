@@ -21,16 +21,15 @@ class SearchCitiesUseCaseTest {
     )
 
     @Test
-    fun `trimmed query shorter than 2 returns empty without hitting repo`() = runTest {
+    fun `blank query returns empty without hitting repo`() = runTest {
         assertThat(useCase("")).isEmpty()
         assertThat(useCase(" ")).isEmpty()
-        assertThat(useCase("a")).isEmpty()
-        assertThat(useCase(" a ")).isEmpty()
+        assertThat(useCase("   ")).isEmpty()
         coVerify(exactly = 0) { repo.searchCities(any()) }
     }
 
     @Test
-    fun `trimmed query of length 2 or more delegates to repository`() = runTest {
+    fun `non-blank query is trimmed and delegated to repository`() = runTest {
         coEvery { repo.searchCities("Taipei") } returns listOf(taipei)
         val result = useCase("  Taipei  ")
         assertThat(result).containsExactly(taipei)

@@ -42,15 +42,19 @@ class AddCityViewModelTest {
     }
 
     @Test
-    fun `stays Idle when query is below minimum length`() = runTest {
+    fun `returns to Idle when query is cleared`() = runTest {
+        coEvery { search("Taipei") } returns listOf(taipei)
         val vm = newVm()
         vm.uiState.test {
-            assertThat(awaitItem()).isInstanceOf(AddCityUiState.Idle::class.java)
-            vm.onQueryChange("a")
+            skipItems(1)
+            vm.onQueryChange("Taipei")
             advanceUntilIdle()
+            vm.onQueryChange("   ")
+            advanceUntilIdle()
+            val latest = expectMostRecentItem()
+            assertThat(latest).isInstanceOf(AddCityUiState.Idle::class.java)
             cancelAndIgnoreRemainingEvents()
         }
-        assertThat(vm.uiState.value).isInstanceOf(AddCityUiState.Idle::class.java)
     }
 
     @Test

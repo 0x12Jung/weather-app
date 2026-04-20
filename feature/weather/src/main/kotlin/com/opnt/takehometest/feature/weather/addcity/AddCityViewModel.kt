@@ -7,11 +7,13 @@ import com.opnt.takehometest.core.domain.usecase.AddCityUseCase
 import com.opnt.takehometest.core.domain.usecase.ObserveSavedCitiesUseCase
 import com.opnt.takehometest.core.domain.usecase.SearchCitiesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
@@ -40,28 +43,24 @@ class AddCityViewModel @Inject constructor(
     )
     val events: SharedFlow<AddCityEvent> = _events.asSharedFlow()
 
-    val uiState: StateFlow<AddCityUiState> = combine(
-        query
-            .debounce(DEBOUNCE_MILLIS)
-            .distinctUntilChanged()
-            .transformLatest { q ->
-                if (q.trim().length < MIN_QUERY) {
-                    emit(AddCityUiState.Idle)
-                } else {
-                    emit(AddCityUiState.Loading)
-                    emit(loadResults(q))
-                }
-            },
-        observeSavedCities(),
-    ) { base, saved ->
-        val savedIds = saved.map { it.id }.toSet()
-        when (base) {
-            is AddCityUiState.Results -> base.copy(
-                cities = base.cities.map { it.copy(alreadySaved = it.city.id in savedIds) },
-            )
-            else -> base
+    private val searchFlow: Flow<AddCityUiState> = query
+        .map { it.trim() }
+        .debounce(DEBOUNCE_MILLIS)
+        .distinctUntilChanged()
+        .transformLatest { q ->
+            if (q.isEmpty()) {
+                emit(AddCityUiState.Idle)
+            } else {
+                emit(AddCityUiState.Loading)
+                emit(search(q))
+            }
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AddCityUiState.Idle)
+
+    val uiState: StateFlow<AddCityUiState> = combine(
+        searchFlow,
+        observeSavedCities(),
+    ) { base, saved -> base.markSaved(saved) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AddCityUiState.Idle)
 
     fun onQueryChange(q: String) { query.value = q }
 
@@ -75,16 +74,21 @@ class AddCityViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadResults(q: String): AddCityUiState = try {
+    private suspend fun search(q: String): AddCityUiState = try {
         val cities = searchCities(q)
         if (cities.isEmpty()) AddCityUiState.NoResults
         else AddCityUiState.Results(cities.map { AddCityResultItem(it, alreadySaved = false) })
-    } catch (_: Throwable) {
+    } catch (_: IOException) {
         AddCityUiState.Error("Search failed. Check your network.")
     }
 
+    private fun AddCityUiState.markSaved(saved: List<City>): AddCityUiState {
+        if (this !is AddCityUiState.Results) return this
+        val savedIds = saved.mapTo(mutableSetOf()) { it.id }
+        return copy(cities = cities.map { it.copy(alreadySaved = it.city.id in savedIds) })
+    }
+
     companion object {
-        const val MIN_QUERY = 2
         val DEBOUNCE_MILLIS = 300.milliseconds.inWholeMilliseconds
     }
 }
