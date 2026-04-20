@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -37,6 +38,7 @@ fun ErrorView(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 12.dp),
+            textAlign = Center,
         )
         if (onRetry != null) {
             Button(onClick = onRetry, modifier = Modifier.padding(top = 12.dp)) {

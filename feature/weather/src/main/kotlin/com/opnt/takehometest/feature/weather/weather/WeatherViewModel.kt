@@ -70,6 +70,6 @@ class WeatherViewModel @Inject constructor(
 }
 
 internal fun Throwable.toUserMessage(): String = when (this) {
-    is IOException -> "No internet connection. Check your network and try again."
+    is IOException -> "No internet connection.\nCheck your network and try again."
     else -> "Something went wrong."
 }
