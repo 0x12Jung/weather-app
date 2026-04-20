@@ -24,7 +24,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -44,6 +47,7 @@ fun AddCityScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val focusRequester = remember { FocusRequester() }
+    var queryInput by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { evt ->
@@ -68,8 +72,11 @@ fun AddCityScreen(
         Box(Modifier.fillMaxSize().padding(padding)) {
             Column(Modifier.fillMaxSize()) {
                 OutlinedTextField(
-                    value = uiState.query,
-                    onValueChange = viewModel::onQueryChange,
+                    value = queryInput,
+                    onValueChange = {
+                        queryInput = it
+                        viewModel.onQueryChange(it)
+                    },
                     label = { Text("Search city") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -86,7 +93,7 @@ fun AddCityScreen(
                         contentAlignment = Alignment.Center,
                     ) { CircularProgressIndicator() }
                     is AddCityUiState.NoResults -> EmptyView(
-                        message = "No cities match '${state.query}'.",
+                        message = "No cities match your search.",
                     )
                     is AddCityUiState.Error -> ErrorView(state.message)
                     is AddCityUiState.Results -> LazyColumn(Modifier.fillMaxSize()) {

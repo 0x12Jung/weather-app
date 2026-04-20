@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -44,7 +44,14 @@ class AddCityViewModel @Inject constructor(
         query
             .debounce(DEBOUNCE_MILLIS)
             .distinctUntilChanged()
-            .mapLatest { q -> loadResults(q) },
+            .transformLatest { q ->
+                if (q.trim().length < MIN_QUERY) {
+                    emit(AddCityUiState.Idle)
+                } else {
+                    emit(AddCityUiState.Loading)
+                    emit(loadResults(q))
+                }
+            },
         observeSavedCities(),
     ) { base, saved ->
         val savedIds = saved.map { it.id }.toSet()
@@ -54,7 +61,7 @@ class AddCityViewModel @Inject constructor(
             )
             else -> base
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AddCityUiState.Idle())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AddCityUiState.Idle)
 
     fun onQueryChange(q: String) { query.value = q }
 
@@ -68,15 +75,12 @@ class AddCityViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadResults(q: String): AddCityUiState {
-        if (q.trim().length < MIN_QUERY) return AddCityUiState.Idle(q)
-        return try {
-            val cities = searchCities(q)
-            if (cities.isEmpty()) AddCityUiState.NoResults(q)
-            else AddCityUiState.Results(q, cities.map { AddCityResultItem(it, alreadySaved = false) })
-        } catch (t: Throwable) {
-            AddCityUiState.Error(q, "Search failed. Check your network.")
-        }
+    private suspend fun loadResults(q: String): AddCityUiState = try {
+        val cities = searchCities(q)
+        if (cities.isEmpty()) AddCityUiState.NoResults
+        else AddCityUiState.Results(cities.map { AddCityResultItem(it, alreadySaved = false) })
+    } catch (_: Throwable) {
+        AddCityUiState.Error("Search failed. Check your network.")
     }
 
     companion object {
