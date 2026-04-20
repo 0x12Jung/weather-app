@@ -25,6 +25,24 @@ class CityListScreenSourceTest {
         assertTrue(source.contains("Text(\"Add city\")"))
     }
 
+    @Test
+    fun cityListScreen_usesThresholdedSwipeDelete_withoutUndoSnackbar() {
+        val source = String(
+            Files.readAllBytes(
+                findRepoRoot().resolve(
+                    "feature/weather/src/main/kotlin/com/opnt/takehometest/feature/weather/cities/CityListScreen.kt"
+                )
+            ),
+            StandardCharsets.UTF_8,
+        )
+
+        assertTrue(source.contains("positionalThreshold"))
+        assertTrue(source.contains("totalDistance * 0.35f"))
+        assertFalse(source.contains("SnackbarHost("))
+        assertFalse(source.contains("pendingUndo"))
+        assertFalse(source.contains("showSnackbar("))
+    }
+
     private fun findRepoRoot(): Path {
         var current = Path.of("").toAbsolutePath()
         while (current.parent != null) {

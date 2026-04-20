@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.opnt.takehometest.core.domain.model.City
 import com.opnt.takehometest.core.domain.model.Coordinates
-import com.opnt.takehometest.core.domain.usecase.AddCityUseCase
 import com.opnt.takehometest.core.domain.usecase.ObserveSavedCitiesUseCase
 import com.opnt.takehometest.core.domain.usecase.ObserveSelectedCityUseCase
 import com.opnt.takehometest.core.domain.usecase.RemoveCityUseCase
@@ -32,7 +31,6 @@ class CityListViewModelTest {
     private val observeSelected: ObserveSelectedCityUseCase = mockk()
     private val select: SelectCityUseCase = mockk()
     private val remove: RemoveCityUseCase = mockk()
-    private val add: AddCityUseCase = mockk()
 
     private val taipei = City(
         id = 1L, name = "Taipei", country = "Taiwan", admin = "Taipei City",
@@ -49,7 +47,7 @@ class CityListViewModelTest {
     ): Pair<CityListViewModel, Pair<MutableStateFlow<List<City>>, MutableStateFlow<City?>>> {
         every { observeSaved() } returns savedFlow
         every { observeSelected() } returns selectedFlow
-        return CityListViewModel(observeSaved, observeSelected, select, remove, add) to
+        return CityListViewModel(observeSaved, observeSelected, select, remove) to
             (savedFlow to selectedFlow)
     }
 
@@ -81,7 +79,7 @@ class CityListViewModelTest {
     }
 
     @Test
-    fun `onSwipeRemove removes city and exposes pending undo`() = runTest {
+    fun `onSwipeRemove removes city immediately`() = runTest {
         val (vm, _) = newVm(MutableStateFlow(listOf(taipei, tokyo)))
         coEvery { remove(tokyo.id) } just Runs
 
@@ -89,43 +87,5 @@ class CityListViewModelTest {
         advanceUntilIdle()
 
         coVerify(exactly = 1) { remove(tokyo.id) }
-        vm.pendingUndo.test {
-            assertThat(awaitItem()).isEqualTo(tokyo)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `onUndoRemoval re-adds the most recently removed city`() = runTest {
-        val (vm, _) = newVm(MutableStateFlow(listOf(taipei, tokyo)))
-        coEvery { remove(tokyo.id) } just Runs
-        coEvery { add(tokyo) } just Runs
-        vm.onSwipeRemove(tokyo)
-        advanceUntilIdle()
-
-        vm.onUndoRemoval()
-        advanceUntilIdle()
-
-        coVerify(exactly = 1) { add(tokyo) }
-        vm.pendingUndo.test {
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `onUndoConsumed clears pendingUndo without re-adding`() = runTest {
-        val (vm, _) = newVm(MutableStateFlow(listOf(tokyo)))
-        coEvery { remove(tokyo.id) } just Runs
-        vm.onSwipeRemove(tokyo)
-        advanceUntilIdle()
-
-        vm.onUndoConsumed()
-
-        vm.pendingUndo.test {
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-        coVerify(exactly = 0) { add(any()) }
     }
 }

@@ -19,9 +19,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -29,9 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -50,21 +45,6 @@ fun CityListScreen(
     viewModel: CityListViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val pendingUndo by viewModel.pendingUndo.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(pendingUndo) {
-        val city = pendingUndo ?: return@LaunchedEffect
-        val result = snackbarHostState.showSnackbar(
-            message = "Removed ${city.name}",
-            actionLabel = "Undo",
-            withDismissAction = false,
-        )
-        when (result) {
-            SnackbarResult.ActionPerformed -> viewModel.onUndoRemoval()
-            SnackbarResult.Dismissed -> viewModel.onUndoConsumed()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -82,7 +62,6 @@ fun CityListScreen(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (val state = uiState) {
@@ -122,9 +101,9 @@ private fun SwipeableCityRow(
     onDismiss: () -> Unit,
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
+        positionalThreshold = { totalDistance -> totalDistance * 0.35f },
         confirmValueChange = {
-            val shouldDismiss = it == SwipeToDismissBoxValue.EndToStart ||
-                it == SwipeToDismissBoxValue.StartToEnd
+            val shouldDismiss = it == SwipeToDismissBoxValue.EndToStart
             if (shouldDismiss) onDismiss()
             shouldDismiss
         },
@@ -146,6 +125,7 @@ private fun SwipeableCityRow(
                 )
             }
         },
+        enableDismissFromStartToEnd = false,
     ) {
         ListItem(
             headlineContent = {
