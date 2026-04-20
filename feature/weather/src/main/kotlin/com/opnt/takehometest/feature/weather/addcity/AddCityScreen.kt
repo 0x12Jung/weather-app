@@ -35,7 +35,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.opnt.takehometest.core.ui.component.EmptyView
 import com.opnt.takehometest.core.ui.component.ErrorView
 import com.opnt.takehometest.core.ui.component.LoadingIndicator
@@ -54,14 +57,17 @@ fun AddCityScreen(
     var queryInput by rememberSaveable { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
     val addFailedMessage = stringResource(R.string.add_city_error_add_failed)
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { evt ->
-            when (evt) {
-                AddCityEvent.CityAdded -> onCityAdded()
-                AddCityEvent.AddFailed -> snackbarHostState.showSnackbar(addFailedMessage)
+    LaunchedEffect(viewModel.events, lifecycleOwner) {
+        viewModel.events
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { evt ->
+                when (evt) {
+                    AddCityEvent.CityAdded -> onCityAdded()
+                    AddCityEvent.AddFailed -> snackbarHostState.showSnackbar(addFailedMessage)
+                }
             }
-        }
     }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
