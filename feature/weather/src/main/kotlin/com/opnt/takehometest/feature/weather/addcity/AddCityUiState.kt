@@ -16,4 +16,5 @@ data class AddCityResultItem(val city: City, val alreadySaved: Boolean)
 
 sealed interface AddCityEvent {
     data object CityAdded : AddCityEvent
+    data object AddFailed : AddCityEvent
 }

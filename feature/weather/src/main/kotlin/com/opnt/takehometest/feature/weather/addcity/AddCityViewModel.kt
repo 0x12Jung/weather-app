@@ -69,7 +69,8 @@ class AddCityViewModel @Inject constructor(
             try {
                 addCity(city)
                 _events.tryEmit(AddCityEvent.CityAdded)
-            } catch (_: Throwable) {
+            } catch (_: Exception) {
+                _events.tryEmit(AddCityEvent.AddFailed)
             }
         }
     }

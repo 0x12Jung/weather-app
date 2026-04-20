@@ -18,6 +18,8 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -50,16 +52,22 @@ fun AddCityScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val focusRequester = remember { FocusRequester() }
     var queryInput by rememberSaveable { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val addFailedMessage = stringResource(R.string.add_city_error_add_failed)
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { evt ->
-            if (evt is AddCityEvent.CityAdded) onCityAdded()
+            when (evt) {
+                AddCityEvent.CityAdded -> onCityAdded()
+                AddCityEvent.AddFailed -> snackbarHostState.showSnackbar(addFailedMessage)
+            }
         }
     }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.add_city_title)) },
