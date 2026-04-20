@@ -88,14 +88,17 @@ fun WeatherScreen(
                     }
                     ErrorView(msg, onRetry = viewModel::onRetry)
                 }
-                is WeatherUiState.Success -> WeatherContent(state.forecast)
+                is WeatherUiState.Success -> {
+                    val zone = TimeZone.of(state.city.timezone)
+                    WeatherContent(state.forecast, zone)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun WeatherContent(forecast: Forecast) {
+private fun WeatherContent(forecast: Forecast, zone: TimeZone) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -109,7 +112,7 @@ private fun WeatherContent(forecast: Forecast) {
         }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(forecast.hourly, key = { it.time.toEpochMilliseconds() }) { HourlyCell(it) }
+                items(forecast.hourly, key = { it.time.toEpochMilliseconds() }) { HourlyCell(it, zone) }
             }
         }
         item { HorizontalDivider() }
@@ -149,14 +152,12 @@ private fun CurrentCard(forecast: Forecast) {
 }
 
 @Composable
-private fun HourlyCell(hour: HourlyWeather) {
-    val zone = TimeZone.currentSystemDefault()
-    val hh = hour.time.toLocalDateTime(zone).hour
+private fun HourlyCell(hour: HourlyWeather, zone: TimeZone) {
     Column(
         modifier = Modifier.width(64.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("${hh}:00", style = MaterialTheme.typography.labelMedium)
+        Text(formatHourlyHour(hour.time, zone), style = MaterialTheme.typography.labelMedium)
         WeatherIcon(hour.condition, modifier = Modifier.size(32.dp).padding(vertical = 4.dp))
         Text("${hour.temperatureCelsius.toInt()}°", style = MaterialTheme.typography.bodyMedium)
     }
