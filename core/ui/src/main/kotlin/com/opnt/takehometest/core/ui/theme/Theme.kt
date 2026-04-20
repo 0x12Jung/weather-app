@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
-private val DarkColors = darkColorScheme(
+internal val AppColorScheme = darkColorScheme(
     primary = DarkPrimary,
     onPrimary = DarkOnPrimary,
     primaryContainer = DarkPrimaryContainer,
@@ -13,14 +13,12 @@ private val DarkColors = darkColorScheme(
     surface = DarkSurface,
 )
 
-internal fun appColorScheme() = DarkColors
-
 @Composable
 fun AppTheme(
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colorScheme = appColorScheme(),
+        colorScheme = AppColorScheme,
         typography = AppTypography,
         content = content,
     )

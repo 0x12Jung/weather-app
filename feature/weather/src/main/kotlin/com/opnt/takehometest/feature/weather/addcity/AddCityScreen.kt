@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -38,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.opnt.takehometest.core.ui.component.EmptyView
 import com.opnt.takehometest.core.ui.component.ErrorView
+import com.opnt.takehometest.core.ui.component.LoadingIndicator
 import com.opnt.takehometest.feature.weather.R
 import com.opnt.takehometest.core.ui.R as CoreUiR
 
@@ -94,10 +93,7 @@ fun AddCityScreen(
                     is AddCityUiState.Idle -> EmptyView(
                         message = stringResource(R.string.add_city_empty_idle),
                     )
-                    is AddCityUiState.Loading -> Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) { CircularProgressIndicator() }
+                    is AddCityUiState.Loading -> LoadingIndicator()
                     is AddCityUiState.NoResults -> EmptyView(
                         message = stringResource(R.string.add_city_empty_no_results),
                     )

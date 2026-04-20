@@ -52,8 +52,8 @@ class WeatherViewModel @Inject constructor(
             try {
                 val forecast = getForecast(city)
                 _uiState.value = WeatherUiState.Success(city, forecast)
-            } catch (t: Throwable) {
-                _uiState.value = WeatherUiState.Error(t.toError())
+            } catch (e: Exception) {
+                _uiState.value = WeatherUiState.Error(e.toError())
             }
         }
     }
@@ -63,8 +63,8 @@ class WeatherViewModel @Inject constructor(
         try {
             val forecast = getForecast(city)
             _uiState.value = WeatherUiState.Success(city, forecast)
-        } catch (t: Throwable) {
-            _uiState.value = WeatherUiState.Error(t.toError())
+        } catch (e: Exception) {
+            _uiState.value = WeatherUiState.Error(e.toError())
         }
     }
 }

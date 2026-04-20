@@ -45,7 +45,7 @@ class AddCityViewModel @Inject constructor(
 
     private val searchFlow: Flow<AddCityUiState> = query
         .map { it.trim() }
-        .debounce(DEBOUNCE_MILLIS)
+        .debounce(DEBOUNCE_DURATION)
         .distinctUntilChanged()
         .transformLatest { q ->
             if (q.isEmpty()) {
@@ -89,6 +89,6 @@ class AddCityViewModel @Inject constructor(
     }
 
     companion object {
-        val DEBOUNCE_MILLIS = 300.milliseconds.inWholeMilliseconds
+        val DEBOUNCE_DURATION = 300.milliseconds
     }
 }

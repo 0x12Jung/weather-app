@@ -6,7 +6,7 @@ import org.junit.Test
 class ThemeTest {
     @Test
     fun appColorScheme_returnsCustomDarkPalette() {
-        val colorScheme = appColorScheme()
+        val colorScheme = AppColorScheme
 
         assertEquals(DarkPrimary, colorScheme.primary)
         assertEquals(DarkOnPrimary, colorScheme.onPrimary)

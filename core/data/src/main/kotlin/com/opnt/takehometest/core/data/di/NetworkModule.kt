@@ -37,16 +37,15 @@ object NetworkModule {
 
     @Provides @Singleton @ForecastRetrofit
     fun provideForecastRetrofit(client: OkHttpClient, json: Json): Retrofit =
-        Retrofit.Builder()
-            .baseUrl("https://api.open-meteo.com/")
-            .client(client)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .build()
+        buildRetrofit("https://api.open-meteo.com/", client, json)
 
     @Provides @Singleton @GeocodingRetrofit
     fun provideGeocodingRetrofit(client: OkHttpClient, json: Json): Retrofit =
+        buildRetrofit("https://geocoding-api.open-meteo.com/", client, json)
+
+    private fun buildRetrofit(baseUrl: String, client: OkHttpClient, json: Json): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://geocoding-api.open-meteo.com/")
+            .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()

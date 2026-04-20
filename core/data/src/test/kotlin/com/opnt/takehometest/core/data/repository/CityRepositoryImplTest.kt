@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.opnt.takehometest.core.data.local.SavedCitiesState
 import com.opnt.takehometest.core.data.local.SerializableCity
-import com.opnt.takehometest.core.data.mapper.CityMapper
 import com.opnt.takehometest.core.data.network.OpenMeteoGeocodingApi
 import com.opnt.takehometest.core.data.network.dto.GeocodingResponseDto
 import com.opnt.takehometest.core.domain.model.City
@@ -17,10 +16,9 @@ import org.junit.Test
 class CityRepositoryImplTest {
 
     private val api: OpenMeteoGeocodingApi = mockk()
-    private val mapper = CityMapper()
 
     private fun newRepo(initial: SavedCitiesState = SavedCitiesState()) =
-        CityRepositoryImpl(api, FakeDataStore(initial), mapper)
+        CityRepositoryImpl(api, FakeDataStore(initial))
 
     private val taipei = City(
         id = 1L, name = "Taipei", country = "Taiwan", admin = "Taipei City",

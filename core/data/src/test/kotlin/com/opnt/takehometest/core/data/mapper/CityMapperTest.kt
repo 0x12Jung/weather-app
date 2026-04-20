@@ -9,8 +9,6 @@ import org.junit.Test
 
 class CityMapperTest {
 
-    private val mapper = CityMapper()
-
     @Test
     fun `geocoding DTO to domain preserves id, name, country, admin, coords, timezone`() {
         val dto = GeocodingResponseDto.GeocodingResultDto(
@@ -22,8 +20,7 @@ class CityMapperTest {
             admin1 = "Taipei City",
             timezone = "Asia/Taipei",
         )
-        val city = mapper.toDomain(dto)
-        assertThat(city).isEqualTo(City(
+        assertThat(dto.toCity()).isEqualTo(City(
             id = 1668341L, name = "Taipei", country = "Taiwan", admin = "Taipei City",
             coordinates = Coordinates(25.04, 121.56), timezone = "Asia/Taipei",
         ))
@@ -35,8 +32,7 @@ class CityMapperTest {
             id = 99L, name = "London", country = "UK", admin = null,
             coordinates = Coordinates(51.5, -0.12), timezone = "Europe/London",
         )
-        val roundTripped = mapper.toDomain(mapper.toSerializable(city))
-        assertThat(roundTripped).isEqualTo(city)
+        assertThat(city.toSerializable().toCity()).isEqualTo(city)
     }
 
     @Test
@@ -45,6 +41,6 @@ class CityMapperTest {
             id = 99L, name = "X", country = "Y", admin = null,
             latitude = 0.0, longitude = 0.0, timezone = "UTC",
         )
-        assertThat(mapper.toDomain(serialized).admin).isNull()
+        assertThat(serialized.toCity().admin).isNull()
     }
 }
