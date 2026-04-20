@@ -8,65 +8,41 @@ import com.opnt.takehometest.core.domain.usecase.ObserveSelectedCityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val observeSelectedCity: ObserveSelectedCityUseCase,
+    observeSelectedCity: ObserveSelectedCityUseCase,
     private val getForecast: GetForecastUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Loading)
-    val uiState: StateFlow<WeatherUiState> = _uiState.asStateFlow()
+    private val refresh = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    private var currentCity: City? = null
-
-    init {
-        viewModelScope.launch {
-            observeSelectedCity().collectLatest { city ->
-                currentCity = city
-                if (city == null) {
-                    _uiState.value = WeatherUiState.NoCity
-                } else {
-                    loadForecast(city)
-                }
-            }
+    val uiState: StateFlow<WeatherUiState> = observeSelectedCity()
+        .flatMapLatest { city ->
+            if (city == null) flowOf(WeatherUiState.NoCity)
+            else refresh.onStart { emit(Unit) }.flatMapLatest { fetchFor(city) }
         }
-    }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), WeatherUiState.Loading)
 
-    fun onRetry() {
-        val city = currentCity ?: return
-        viewModelScope.launch { loadForecast(city) }
-    }
+    fun onRetry() { refresh.tryEmit(Unit) }
+    fun onRefresh() { refresh.tryEmit(Unit) }
 
-    fun onRefresh() {
-        val city = currentCity ?: return
-        viewModelScope.launch {
-            (_uiState.value as? WeatherUiState.Success)?.let {
-                _uiState.value = it.copy(isRefreshing = true)
-            }
-            try {
-                val forecast = getForecast(city)
-                _uiState.value = WeatherUiState.Success(city, forecast)
-            } catch (e: Exception) {
-                _uiState.value = WeatherUiState.Error(e.toError())
-            }
-        }
-    }
-
-    private suspend fun loadForecast(city: City) {
-        _uiState.value = WeatherUiState.Loading
-        try {
-            val forecast = getForecast(city)
-            _uiState.value = WeatherUiState.Success(city, forecast)
-        } catch (e: Exception) {
-            _uiState.value = WeatherUiState.Error(e.toError())
-        }
-    }
+    private fun fetchFor(city: City): Flow<WeatherUiState> = flow {
+        emit(WeatherUiState.Loading)
+        emit(WeatherUiState.Success(city, getForecast(city)))
+    }.catch { emit(WeatherUiState.Error(it.toError())) }
 }
 
 internal fun Throwable.toError(): WeatherError = when (this) {
