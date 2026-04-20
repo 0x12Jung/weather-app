@@ -69,7 +69,7 @@ fun CityListScreen(
                 is CityListUiState.Content -> {
                     if (state.cities.isEmpty()) {
                         EmptyView(
-                            message = "No saved cities. Tap + to add a city.",
+                            message = "No saved cities",
                             actionLabel = "Add city",
                             onAction = onAddCity,
                         )

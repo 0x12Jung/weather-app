@@ -86,14 +86,14 @@ fun AddCityScreen(
 
                 when (val state = uiState) {
                     is AddCityUiState.Idle -> EmptyView(
-                        message = "Start typing a city name.",
+                        message = "Start typing a city name",
                     )
                     is AddCityUiState.Loading -> Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) { CircularProgressIndicator() }
                     is AddCityUiState.NoResults -> EmptyView(
-                        message = "No cities match your search.",
+                        message = "No cities match your search",
                     )
                     is AddCityUiState.Error -> ErrorView(state.message)
                     is AddCityUiState.Results -> LazyColumn(Modifier.fillMaxSize()) {

@@ -72,7 +72,7 @@ fun WeatherScreen(
             when (val state = uiState) {
                 WeatherUiState.Loading -> LoadingIndicator()
                 WeatherUiState.NoCity -> EmptyView(
-                    message = "No city selected. Add a city to see forecasts.",
+                    message = "No city selected\nAdd a city to see forecasts",
                     actionLabel = "Add city",
                     onAction = onOpenCityList,
                 )
