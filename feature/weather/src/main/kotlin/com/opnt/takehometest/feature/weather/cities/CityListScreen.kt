@@ -74,10 +74,12 @@ fun CityListScreen(
                             onAction = onAddCity,
                         )
                     } else {
+                        val canRemove = state.cities.size > 1
                         LazyColumn(Modifier.fillMaxSize()) {
                             items(state.cities, key = { it.city.id }) { item ->
                                 SwipeableCityRow(
                                     item = item,
+                                    canRemove = canRemove,
                                     onTap = {
                                         viewModel.onSelectCity(item.city.id)
                                         onCitySelected()
@@ -97,6 +99,7 @@ fun CityListScreen(
 @Composable
 private fun SwipeableCityRow(
     item: CityListItem,
+    canRemove: Boolean,
     onTap: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -126,6 +129,7 @@ private fun SwipeableCityRow(
             }
         },
         enableDismissFromStartToEnd = false,
+        gesturesEnabled = canRemove,
     ) {
         ListItem(
             headlineContent = {
