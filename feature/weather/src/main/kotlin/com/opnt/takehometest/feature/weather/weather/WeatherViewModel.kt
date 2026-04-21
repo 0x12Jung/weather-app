@@ -3,6 +3,7 @@ package com.opnt.takehometest.feature.weather.weather
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.opnt.takehometest.core.domain.model.City
+import com.opnt.takehometest.core.domain.model.Forecast
 import com.opnt.takehometest.core.domain.usecase.GetForecastUseCase
 import com.opnt.takehometest.core.domain.usecase.ObserveSelectedCityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.datetime.TimeZone
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -40,11 +42,39 @@ class WeatherViewModel @Inject constructor(
 
     private fun fetchFor(city: City): Flow<WeatherUiState> = flow {
         emit(WeatherUiState.Loading)
-        emit(WeatherUiState.Success(city, getForecast(city)))
+        emit(WeatherUiState.Success(getForecast(city).toContentUiModel(city)))
     }.catch { emit(WeatherUiState.Error(it.toError())) }
 }
 
 internal fun Throwable.toError(): WeatherError = when (this) {
     is IOException -> WeatherError.NoInternet
     else -> WeatherError.Generic
+}
+
+private fun Forecast.toContentUiModel(city: City): WeatherContentUiModel {
+    val zone = TimeZone.of(city.timezone)
+    return WeatherContentUiModel(
+        cityTitle = "${city.name}, ${city.country}",
+        current = CurrentWeatherUiModel(
+            temperatureText = "${current.temperatureCelsius.toInt()}°C",
+            condition = current.condition,
+            windSpeedKmh = current.windSpeedKmh,
+        ),
+        hourly = hourly.map { hour ->
+            HourlyWeatherUiModel(
+                epochMillis = hour.time.toEpochMilliseconds(),
+                hourText = formatHourlyHour(hour.time, zone),
+                temperatureText = "${hour.temperatureCelsius.toInt()}°",
+                condition = hour.condition,
+            )
+        },
+        daily = daily.map { day ->
+            DailyWeatherUiModel(
+                epochDays = day.date.toEpochDays(),
+                dayText = day.date.dayOfWeek.name.take(3),
+                condition = day.condition,
+                temperatureRangeText = "${day.minTemperatureCelsius.toInt()}° / ${day.maxTemperatureCelsius.toInt()}°",
+            )
+        },
+    )
 }

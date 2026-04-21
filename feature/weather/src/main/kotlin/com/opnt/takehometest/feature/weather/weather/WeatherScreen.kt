@@ -33,17 +33,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.opnt.takehometest.core.domain.model.DailyWeather
-import com.opnt.takehometest.core.domain.model.Forecast
-import com.opnt.takehometest.core.domain.model.HourlyWeather
 import com.opnt.takehometest.core.ui.component.EmptyView
 import com.opnt.takehometest.core.ui.component.ErrorView
 import com.opnt.takehometest.core.ui.component.LoadingIndicator
 import com.opnt.takehometest.core.ui.component.WeatherIcon
 import com.opnt.takehometest.core.ui.component.label
 import com.opnt.takehometest.feature.weather.R
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +52,7 @@ fun WeatherScreen(
             TopAppBar(
                 title = {
                     val cityTitle = when (val state = uiState) {
-                        is WeatherUiState.Success -> "${state.city.name}, ${state.city.country}"
+                        is WeatherUiState.Success -> state.content.cityTitle
                         else -> stringResource(R.string.weather_title)
                     }
                     Text(cityTitle)
@@ -88,22 +83,19 @@ fun WeatherScreen(
                     }
                     ErrorView(msg, onRetry = viewModel::onRetry)
                 }
-                is WeatherUiState.Success -> {
-                    val zone = TimeZone.of(state.city.timezone)
-                    WeatherContent(state.forecast, zone)
-                }
+                is WeatherUiState.Success -> WeatherContent(state.content)
             }
         }
     }
 }
 
 @Composable
-private fun WeatherContent(forecast: Forecast, zone: TimeZone) {
+private fun WeatherContent(content: WeatherContentUiModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item { CurrentCard(forecast) }
+        item { CurrentCard(content.current) }
         item {
             Text(
                 stringResource(R.string.weather_section_next_24h),
@@ -112,7 +104,7 @@ private fun WeatherContent(forecast: Forecast, zone: TimeZone) {
         }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(forecast.hourly, key = { it.time.toEpochMilliseconds() }) { HourlyCell(it, zone) }
+                items(content.hourly, key = { it.epochMillis }) { HourlyCell(it) }
             }
         }
         item { HorizontalDivider() }
@@ -122,20 +114,19 @@ private fun WeatherContent(forecast: Forecast, zone: TimeZone) {
                 style = MaterialTheme.typography.titleMedium,
             )
         }
-        items(forecast.daily, key = { it.date.toEpochDays() }) { DailyRow(it) }
+        items(content.daily, key = { it.epochDays }) { DailyRow(it) }
     }
 }
 
 @Composable
-private fun CurrentCard(forecast: Forecast) {
-    val current = forecast.current
+private fun CurrentCard(current: CurrentWeatherUiModel) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 WeatherIcon(current.condition, modifier = Modifier.size(64.dp))
                 Column(Modifier.padding(start = 16.dp)) {
                     Text(
-                        text = "${current.temperatureCelsius.toInt()}°C",
+                        text = current.temperatureText,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -152,25 +143,25 @@ private fun CurrentCard(forecast: Forecast) {
 }
 
 @Composable
-private fun HourlyCell(hour: HourlyWeather, zone: TimeZone) {
+private fun HourlyCell(hour: HourlyWeatherUiModel) {
     Column(
         modifier = Modifier.width(64.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(formatHourlyHour(hour.time, zone), style = MaterialTheme.typography.labelMedium)
+        Text(hour.hourText, style = MaterialTheme.typography.labelMedium)
         WeatherIcon(hour.condition, modifier = Modifier.size(32.dp).padding(vertical = 4.dp))
-        Text("${hour.temperatureCelsius.toInt()}°", style = MaterialTheme.typography.bodyMedium)
+        Text(hour.temperatureText, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
 @Composable
-private fun DailyRow(daily: DailyWeather) {
+private fun DailyRow(daily: DailyWeatherUiModel) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = daily.date.dayOfWeek.name.take(3),
+            text = daily.dayText,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.width(56.dp),
         )
@@ -181,7 +172,7 @@ private fun DailyRow(daily: DailyWeather) {
             textAlign = TextAlign.Center,
         )
         Text(
-            text = "${daily.minTemperatureCelsius.toInt()}° / ${daily.maxTemperatureCelsius.toInt()}°",
+            text = daily.temperatureRangeText,
             modifier = Modifier.weight(1f).padding(start = 16.dp),
         )
     }
