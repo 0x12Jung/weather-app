@@ -35,10 +35,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import com.opnt.takehometest.core.ui.component.EmptyView
 import com.opnt.takehometest.core.ui.component.ErrorView
 import com.opnt.takehometest.core.ui.component.LoadingIndicator
@@ -57,17 +54,19 @@ fun AddCityScreen(
     var queryInput by rememberSaveable { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
     val addFailedMessage = stringResource(R.string.add_city_error_add_failed)
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(viewModel.events, lifecycleOwner) {
-        viewModel.events
-            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-            .collect { evt ->
-                when (evt) {
-                    AddCityEvent.CityAdded -> onCityAdded()
-                    AddCityEvent.AddFailed -> snackbarHostState.showSnackbar(addFailedMessage)
-                }
-            }
+    LaunchedEffect(uiState.showAddFailedMsg) {
+        if (uiState.showAddFailedMsg) {
+            snackbarHostState.showSnackbar(addFailedMessage)
+            viewModel.onAddFailedMessageShown()
+        }
+    }
+
+    LaunchedEffect(uiState.isAdded) {
+        if (uiState.isAdded) {
+            viewModel.onNavigationHandled()
+            onCityAdded()
+        }
     }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -103,22 +102,22 @@ fun AddCityScreen(
                         .focusRequester(focusRequester),
                 )
 
-                when (val state = uiState) {
-                    is AddCityUiState.Idle -> EmptyView(
+                when (val state = uiState.searchState) {
+                    is AddCitySearchState.Idle -> EmptyView(
                         message = stringResource(R.string.add_city_empty_idle),
                     )
-                    is AddCityUiState.Loading -> LoadingIndicator()
-                    is AddCityUiState.NoResults -> EmptyView(
+                    is AddCitySearchState.Loading -> LoadingIndicator()
+                    is AddCitySearchState.NoResults -> EmptyView(
                         message = stringResource(R.string.add_city_empty_no_results),
                     )
-                    is AddCityUiState.Error -> {
+                    is AddCitySearchState.Error -> {
                         val msg = when (state.error) {
                             AddCityError.SearchFailed ->
                                 stringResource(R.string.add_city_error_search_failed)
                         }
                         ErrorView(msg)
                     }
-                    is AddCityUiState.Results -> LazyColumn(Modifier.fillMaxSize()) {
+                    is AddCitySearchState.Results -> LazyColumn(Modifier.fillMaxSize()) {
                         items(state.cities, key = { it.city.id }) { item ->
                             ListItem(
                                 headlineContent = { Text(item.city.name) },

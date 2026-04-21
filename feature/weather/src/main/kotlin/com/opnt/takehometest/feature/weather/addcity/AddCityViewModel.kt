@@ -12,20 +12,17 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -37,21 +34,17 @@ class AddCityViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val query = MutableStateFlow("")
+    private val transientState = MutableStateFlow(AddCityTransientState())
 
-    private val _events = MutableSharedFlow<AddCityEvent>(
-        replay = 0, extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<AddCityEvent> = _events.asSharedFlow()
-
-    private val searchFlow: Flow<AddCityUiState> = query
+    private val searchFlow: Flow<AddCitySearchState> = query
         .map { it.trim() }
         .debounce(DEBOUNCE_DURATION)
         .distinctUntilChanged()
         .transformLatest { q ->
             if (q.isEmpty()) {
-                emit(AddCityUiState.Idle)
+                emit(AddCitySearchState.Idle)
             } else {
-                emit(AddCityUiState.Loading)
+                emit(AddCitySearchState.Loading)
                 emit(search(q))
             }
         }
@@ -59,8 +52,14 @@ class AddCityViewModel @Inject constructor(
     val uiState: StateFlow<AddCityUiState> = combine(
         searchFlow,
         observeSavedCities(),
-    ) { base, saved -> base.markSaved(saved) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AddCityUiState.Idle)
+        transientState,
+    ) { searchState, saved, transient ->
+        AddCityUiState(
+            searchState = searchState.markSaved(saved),
+            showAddFailedMsg = transient.showAddFailedMsg,
+            isAdded = transient.isAdded,
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AddCityUiState())
 
     fun onQueryChange(q: String) { query.value = q }
 
@@ -68,23 +67,31 @@ class AddCityViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 addCity(city)
-                _events.tryEmit(AddCityEvent.CityAdded)
+                transientState.update { it.copy(isAdded = true) }
             } catch (_: Exception) {
-                _events.tryEmit(AddCityEvent.AddFailed)
+                transientState.update { it.copy(showAddFailedMsg = true) }
             }
         }
     }
 
-    private suspend fun search(q: String): AddCityUiState = try {
-        val cities = searchCities(q)
-        if (cities.isEmpty()) AddCityUiState.NoResults
-        else AddCityUiState.Results(cities.map { AddCityResultItem(it, alreadySaved = false) })
-    } catch (_: IOException) {
-        AddCityUiState.Error(AddCityError.SearchFailed)
+    fun onNavigationHandled() {
+        transientState.update { it.copy(isAdded = false) }
     }
 
-    private fun AddCityUiState.markSaved(saved: List<City>): AddCityUiState {
-        if (this !is AddCityUiState.Results) return this
+    fun onAddFailedMessageShown() {
+        transientState.update { it.copy(showAddFailedMsg = false) }
+    }
+
+    private suspend fun search(q: String): AddCitySearchState = try {
+        val cities = searchCities(q)
+        if (cities.isEmpty()) AddCitySearchState.NoResults
+        else AddCitySearchState.Results(cities.map { AddCityResultItem(it, alreadySaved = false) })
+    } catch (_: IOException) {
+        AddCitySearchState.Error(AddCityError.SearchFailed)
+    }
+
+    private fun AddCitySearchState.markSaved(saved: List<City>): AddCitySearchState {
+        if (this !is AddCitySearchState.Results) return this
         val savedIds = saved.mapTo(mutableSetOf()) { it.id }
         return copy(cities = cities.map { it.copy(alreadySaved = it.city.id in savedIds) })
     }

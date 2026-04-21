@@ -52,7 +52,7 @@ class AddCityViewModelTest {
             vm.onQueryChange("   ")
             advanceUntilIdle()
             val latest = expectMostRecentItem()
-            assertThat(latest).isInstanceOf(AddCityUiState.Idle::class.java)
+            assertThat(latest.searchState).isEqualTo(AddCitySearchState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -62,7 +62,7 @@ class AddCityViewModelTest {
         coEvery { search("Taipei") } returns listOf(taipei)
         val vm = newVm()
         vm.uiState.test {
-            assertThat(awaitItem()).isInstanceOf(AddCityUiState.Idle::class.java)
+            assertThat(awaitItem().searchState).isEqualTo(AddCitySearchState.Idle)
 
             vm.onQueryChange("Ta")
             advanceTimeBy(100)
@@ -73,25 +73,70 @@ class AddCityViewModelTest {
 
             coVerify(exactly = 1) { search("Taipei") }
             val latest = expectMostRecentItem()
-            assertThat(latest).isInstanceOf(AddCityUiState.Results::class.java)
-            assertThat((latest as AddCityUiState.Results).cities.map { it.city })
+            assertThat(latest.searchState).isInstanceOf(AddCitySearchState.Results::class.java)
+            assertThat((latest.searchState as AddCitySearchState.Results).cities.map { it.city })
                 .containsExactly(taipei)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onAddCity invokes AddCityUseCase and emits CityAdded event`() = runTest {
+    fun `onAddCity invokes AddCityUseCase and sets isAdded`() = runTest {
         val vm = newVm()
         coEvery { add(taipei) } just Runs
 
-        vm.events.test {
+        vm.uiState.test {
+            assertThat(awaitItem().isAdded).isFalse()
             vm.onAddCity(taipei)
             advanceUntilIdle()
-            assertThat(awaitItem()).isEqualTo(AddCityEvent.CityAdded)
+            assertThat(expectMostRecentItem().isAdded).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
         coVerify(exactly = 1) { add(taipei) }
+    }
+
+    @Test
+    fun `onNavigationHandled clears isAdded`() = runTest {
+        val vm = newVm()
+        coEvery { add(taipei) } just Runs
+
+        vm.onAddCity(taipei)
+        advanceUntilIdle()
+        vm.onNavigationHandled()
+
+        vm.uiState.test {
+            assertThat(awaitItem().isAdded).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onAddCity failure sets showAddFailedMsg`() = runTest {
+        val vm = newVm()
+        coEvery { add(taipei) } throws IllegalStateException()
+
+        vm.uiState.test {
+            assertThat(awaitItem().showAddFailedMsg).isFalse()
+            vm.onAddCity(taipei)
+            advanceUntilIdle()
+            assertThat(expectMostRecentItem().showAddFailedMsg).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onAddFailedMessageShown clears showAddFailedMsg`() = runTest {
+        val vm = newVm()
+        coEvery { add(taipei) } throws IllegalStateException()
+
+        vm.onAddCity(taipei)
+        advanceUntilIdle()
+        vm.onAddFailedMessageShown()
+
+        vm.uiState.test {
+            assertThat(awaitItem().showAddFailedMsg).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -102,7 +147,7 @@ class AddCityViewModelTest {
             skipItems(1)
             vm.onQueryChange("Tai")
             advanceUntilIdle()
-            val latest = expectMostRecentItem() as AddCityUiState.Error
+            val latest = expectMostRecentItem().searchState as AddCitySearchState.Error
             assertThat(latest.error).isEqualTo(AddCityError.SearchFailed)
             cancelAndIgnoreRemainingEvents()
         }
@@ -119,8 +164,8 @@ class AddCityViewModelTest {
             vm.onQueryChange("Taipei")
             advanceUntilIdle()
             val latest = expectMostRecentItem()
-            assertThat(latest).isInstanceOf(AddCityUiState.Results::class.java)
-            val firstResult = (latest as AddCityUiState.Results).cities.first()
+            assertThat(latest.searchState).isInstanceOf(AddCitySearchState.Results::class.java)
+            val firstResult = (latest.searchState as AddCitySearchState.Results).cities.first()
             assertThat(firstResult.alreadySaved).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
