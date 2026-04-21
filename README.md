@@ -1,6 +1,6 @@
-# Weather Forecast — OpenNet Android Take-Home
+# Weather Forecast
 
-A 3-screen Android app displaying the current weather and 7-day forecast for user-curated cities. Built as an interview take-home to demonstrate modern (2026) Android engineering judgement.
+A 3-screen Android app displaying the current weather and 7-day forecast for user-curated cities.
 
 ## Quick start
 
