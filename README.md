@@ -13,9 +13,9 @@ Taipei is seeded on first launch so you see a populated screen immediately.
 
 ## Screens
 
-- **Weather** — current temperature/condition/wind + next 24 hours + 7-day daily forecast.
-- **Cities** — saved cities with swipe-to-remove + Undo; tap to switch.
-- **Add city** — autocomplete search via Open-Meteo geocoding.
+- **Weather** — current temperature/condition/wind + next 24 hours + 7-day daily forecast; retry on network error.
+- **Cities** — saved cities with swipe-to-remove (disabled when only one city remains) and tap-to-switch; the selected city is highlighted.
+- **Add city** — debounced geocoding search (Open-Meteo); already-saved results are flagged and non-tappable, and a tap adds the city and returns.
 
 ## Tech choices
 
@@ -29,7 +29,7 @@ Taipei is seeded on first launch so you see a populated screen immediately.
 | Network | Retrofit 2 + OkHttp + kotlinx.serialization | Official Kotlin serialization, no KAPT, clean `@Serializable` annotations. |
 | Persistence | Typed DataStore with `Serializer<SavedCitiesState>` | Structured list → typed store beats JSON-in-Preferences. |
 | Navigation | `androidx.navigation.compose` 2.8 with type-safe `@Serializable` routes | Nav 3's advantages (multi-backstack, shared elements) are unused at 3 destinations. |
-| Icons | Bundled Vector Drawables (Meteocons MIT) | 8–9 static icons; no Coil/Glide. Zero CDN dependency, flicker-free, offline-safe. |
+| Icons | Material Icons (`material-icons-extended`) | Built-in vector icons mapped per `WeatherCondition`; no Coil/Glide, no CDN, flicker-free. |
 | Testing | JUnit 4, MockK, Turbine, kotlinx-coroutines-test, Google Truth, MockWebServer | Pure-JVM tests — no instrumentation needed. |
 
 ## Modules
@@ -38,7 +38,7 @@ Taipei is seeded on first launch so you see a populated screen immediately.
 :app
 :core:domain          (pure JVM — models, repo interfaces, use cases)
 :core:data            (Retrofit + DataStore + implementations)
-:core:ui              (theme + shared components + weather icon VDs)
+:core:ui              (theme + shared components + WeatherIcon mapping)
 :feature:weather      (WeatherScreen + CityListScreen + AddCityScreen)
 ```
 
@@ -60,11 +60,3 @@ Taipei is seeded on first launch so you see a populated screen immediately.
 - Celsius only.
 - No UI instrumentation tests (unit tests cover ViewModels; Compose previews available in dev).
 - English only.
-
-## Attribution
-
-Weather icons derived from [Meteocons](https://bas.dev/work/meteocons) (MIT). See `LICENSES/METEOCONS.md`.
-
-## AI tools
-
-See `AI_TOOLS.md`.
