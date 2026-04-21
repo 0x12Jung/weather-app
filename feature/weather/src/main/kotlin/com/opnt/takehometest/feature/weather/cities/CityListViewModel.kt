@@ -27,7 +27,7 @@ class CityListViewModel @Inject constructor(
             CityListUiState.Content(
                 cities = cities.map { CityListItem(it, it.id == selected?.id) },
                 selectedCityId = selected?.id,
-            ) as CityListUiState
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CityListUiState.Loading)
 
     fun onSelectCity(cityId: Long) {

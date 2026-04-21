@@ -7,4 +7,6 @@ data class City(
     val admin: String?,
     val coordinates: Coordinates,
     val timezone: String,
-)
+) {
+    fun subtitle(): String = listOfNotNull(admin, country).joinToString(", ")
+}

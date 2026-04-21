@@ -122,18 +122,16 @@ fun AddCityScreen(
                             ListItem(
                                 headlineContent = { Text(item.city.name) },
                                 supportingContent = {
-                                    val subtitle = listOfNotNull(item.city.admin, item.city.country)
-                                        .joinToString(", ")
-                                    Text(subtitle)
+                                    Text(item.city.subtitle())
                                 },
-                                trailingContent = if (item.alreadySaved) {
-                                    @Composable {
+                                trailingContent = {
+                                    if (item.alreadySaved) {
                                         Text(
                                             stringResource(R.string.add_city_trailing_already_saved),
                                             color = MaterialTheme.colorScheme.outline,
                                         )
                                     }
-                                } else null,
+                                },
                                 colors = ListItemDefaults.colors(),
                                 modifier = Modifier.fillMaxWidth()
                                     .clickable(enabled = !item.alreadySaved) {

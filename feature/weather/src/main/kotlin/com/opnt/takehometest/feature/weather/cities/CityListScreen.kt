@@ -145,9 +145,7 @@ private fun SwipeableCityRow(
                 )
             },
             supportingContent = {
-                val subtitle = listOfNotNull(item.city.admin, item.city.country)
-                    .joinToString(", ")
-                Text(subtitle)
+                Text(item.city.subtitle())
             },
             colors = if (item.isSelected) {
                 ListItemDefaults.colors(
