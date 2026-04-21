@@ -9,7 +9,6 @@ sealed interface WeatherUiState {
     data class Success(
         val city: City,
         val forecast: Forecast,
-        val isRefreshing: Boolean = false,
     ) : WeatherUiState
     data class Error(val error: WeatherError) : WeatherUiState
 }

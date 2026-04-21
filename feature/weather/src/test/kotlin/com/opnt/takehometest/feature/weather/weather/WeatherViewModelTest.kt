@@ -101,4 +101,18 @@ class WeatherViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `WeatherViewModel does not expose onRefresh`() {
+        val publicMethodNames = WeatherViewModel::class.java.methods.map { it.name }
+
+        assertThat(publicMethodNames).doesNotContain("onRefresh")
+    }
+
+    @Test
+    fun `WeatherUiState Success does not keep isRefreshing field`() {
+        val fieldNames = WeatherUiState.Success::class.java.declaredFields.map { it.name }
+
+        assertThat(fieldNames).doesNotContain("isRefreshing")
+    }
 }

@@ -37,7 +37,6 @@ class WeatherViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), WeatherUiState.Loading)
 
     fun onRetry() { refresh.tryEmit(Unit) }
-    fun onRefresh() { refresh.tryEmit(Unit) }
 
     private fun fetchFor(city: City): Flow<WeatherUiState> = flow {
         emit(WeatherUiState.Loading)
